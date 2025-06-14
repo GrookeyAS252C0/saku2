@@ -436,6 +436,11 @@ def main():
     # セッション初期化
     initialize_session()
     
+    # 募集要項ページの確認
+    if 'show_admission_guide' in st.session_state and st.session_state.show_admission_guide:
+        show_admission_guide_page()
+        return
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -730,7 +735,9 @@ def render_info_sidebar():
     st.markdown("### 📚 日大一FAQ")
     
     st.markdown("#### 🎓 入試について")
-    st.markdown("- [昨年度の入試要項](placeholder)")
+    if st.button("📄 昨年度の入試要項", use_container_width=True):
+        st.session_state.show_admission_guide = True
+        st.rerun()
     st.markdown("- [合格最低点](placeholder)")
     st.markdown("- [偏差値](placeholder)")
     
@@ -753,6 +760,22 @@ def render_info_sidebar():
     
     st.markdown("---")
     st.info("💡 各項目をクリックすると詳細ページが開きます（準備中）")
+
+def show_admission_guide_page():
+    """募集要項ページを表示"""
+    from admission_guide_data import ADMISSION_GUIDE_HTML
+    
+    # ヘッダー
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("📄 令和7年度 生徒募集要項")
+    with col2:
+        if st.button("⬅ アンケートに戻る", use_container_width=True):
+            st.session_state.show_admission_guide = False
+            st.rerun()
+    
+    # HTMLコンテンツを表示
+    st.components.v1.html(ADMISSION_GUIDE_HTML, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()
