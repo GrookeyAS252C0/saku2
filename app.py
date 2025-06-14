@@ -742,7 +742,7 @@ def render_info_sidebar():
     st.markdown("- [偏差値](placeholder)")
     
     st.markdown("#### 🏫 学校生活について")
-    st.markdown("- [部活動一覧](placeholder)")
+    st.markdown("- [🏃 部活動一覧](https://ckdasd5e7s5fktfua5bgyy.streamlit.app/)")
     st.markdown("- [学校行事・年間予定](placeholder)")
     
     st.markdown("#### 📖 進路について")
