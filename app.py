@@ -109,15 +109,34 @@ def save_to_google_sheets(data: Dict[str, Any]):
         
         worksheet = sh.sheet1
         
-        # ヘッダーを設定（初回のみ）
+        # ヘッダーを設定（初回のみ、または古いフォーマットの場合は更新）
         try:
             headers = worksheet.row_values(1)
+            expected_headers = [
+                "ID", "送信日時", "会場", "学年", "性別", "地域",
+                "きっかけ", "決め手", "教育内容", "期待", "情報源"
+            ]
+            
+            # ヘッダーがない場合は新規作成
             if not headers:
-                headers = [
-                    "ID", "送信日時", "会場", "学年", "性別", "地域",
-                    "きっかけ", "決め手", "教育内容", "期待", "情報源"
-                ]
-                worksheet.insert_row(headers, 1)
+                worksheet.insert_row(expected_headers, 1)
+                st.info("✅ Google Sheetsにヘッダーを作成しました")
+            
+            # 古いフォーマット（会場列がない）の場合は「会場」列を挿入
+            elif "会場" not in headers:
+                # 「送信日時」の後（3列目）に「会場」を挿入
+                worksheet.insert_cols(3, 1)
+                worksheet.update_cell(1, 3, "会場")
+                st.info("✅ Google Sheetsに「会場」列を追加しました")
+                
+                # 既存データには「メイン会場」を設定
+                if len(worksheet.get_all_values()) > 1:  # データがある場合
+                    data_rows = len(worksheet.get_all_values())
+                    for row in range(2, data_rows + 1):  # 2行目以降（データ行）
+                        if not worksheet.cell(row, 3).value:  # 会場列が空の場合
+                            worksheet.update_cell(row, 3, "メイン会場")
+                    st.info("✅ 既存データに「メイン会場」を設定しました")
+                    
         except Exception as e:
             st.error(f"ヘッダー設定エラー: {e}")
             return False
