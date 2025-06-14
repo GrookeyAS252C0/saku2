@@ -220,8 +220,9 @@ def navigate_next():
         st.session_state.editing_mode = True
 
 def load_user_data_from_sheets():
-    """Google Sheetsからユーザーのアンケートデータを読み込む"""
+    """Google Sheetsからすべてのアンケートデータを読み込む（デバッグ用）"""
     try:
+        st.write("🔍 データ復旧: 開始")
         credentials = Credentials.from_service_account_info(
             st.secrets["gcp_service_account"],
             scopes=['https://spreadsheets.google.com/feeds',
@@ -231,41 +232,55 @@ def load_user_data_from_sheets():
         spreadsheet_name = st.secrets["google_sheets"]["spreadsheet_name"]
         sh = gc.open(spreadsheet_name)
         worksheet = sh.sheet1
+        st.write("🔍 データ復旧: Google Sheets接続完了")
         
-        # ユーザーIDがセッションに保存されている場合のみ読み込み
-        if 'user_session_id' not in st.session_state:
-            st.session_state.user_session_id = str(uuid.uuid4())
+        # シートからすべてのデータを取得
+        all_data = worksheet.get_all_records()
+        st.write(f"🔍 データ復旧: {len(all_data)}件のレコードを取得")
+        
+        if not all_data:
+            st.info("Google Sheetsにデータが見つかりませんでした")
             return []
         
-        user_id = st.session_state.user_session_id
-        
-        # シートからデータを取得
-        all_data = worksheet.get_all_records()
+        # 最新のデータから最大5件を復旧対象とする
         user_data = []
-        
-        for row in all_data:
-            # ユーザーIDが一致する、または未送信データを取得
-            if str(row.get('ID', '')).startswith(user_id[:8]):  # IDの最初の8文字で判定
+        for i, row in enumerate(all_data[-5:]):  # 最新5件
+            st.write(f"🔍 処理中のレコード{i+1}: {row}")
+            try:
+                # 空の値をフィルタリング
+                triggers = [t for t in str(row.get('きっかけ', '')).split(', ') if t.strip()]
+                decision_factors = [d for d in str(row.get('決め手', '')).split(', ') if d.strip()]
+                education_attractions = [e for e in str(row.get('教育内容', '')).split(', ') if e.strip()]
+                expectations = [ex for ex in str(row.get('期待', '')).split(', ') if ex.strip()]
+                info_sources = [inf for inf in str(row.get('情報源', '')).split(', ') if inf.strip()]
+                
                 survey = SurveyResponse(
-                    id=row.get('ID', ''),
-                    timestamp=row.get('送信日時', ''),
-                    venue=row.get('会場', 'メイン会場'),
-                    grade=row.get('学年', ''),
-                    gender=row.get('性別', ''),
-                    area=row.get('地域', ''),
-                    triggers=row.get('きっかけ', '').split(', ') if row.get('きっかけ') else [],
-                    decision_factors=row.get('決め手', '').split(', ') if row.get('決め手') else [],
-                    education_attractions=row.get('教育内容', '').split(', ') if row.get('教育内容') else [],
-                    expectations=row.get('期待', '').split(', ') if row.get('期待') else [],
-                    info_sources=row.get('情報源', '').split(', ') if row.get('情報源') else [],
+                    id=str(row.get('ID', f'restored_{i}')),
+                    timestamp=str(row.get('送信日時', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))),
+                    venue=str(row.get('会場', 'メイン会場')),
+                    grade=str(row.get('学年', '')),
+                    gender=str(row.get('性別', '')),
+                    area=str(row.get('地域', '')),
+                    triggers=triggers,
+                    decision_factors=decision_factors,
+                    education_attractions=education_attractions,
+                    expectations=expectations,
+                    info_sources=info_sources,
                     submitted=True
                 )
                 user_data.append(survey)
+                st.write(f"✅ レコード{i+1}の変換完了")
+            except Exception as row_error:
+                st.warning(f"⚠️ レコード{i+1}の処理エラー: {row_error}")
+                continue
         
+        st.write(f"🔍 データ復旧: {len(user_data)}件のデータを変換完了")
         return user_data
         
     except Exception as e:
-        # 接続エラーの場合は空のリストを返す
+        st.error(f"❌ データ復旧エラー: {str(e)}")
+        import traceback
+        st.error(f"❌ スタックトレース: {traceback.format_exc()}")
         return []
 
 def check_google_sheets_connection():
@@ -302,21 +317,42 @@ def get_venue_info():
 def recover_user_data():
     """ユーザーデータを復旧"""
     try:
+        st.write("🔍 復旧開始: データ読み込み呼び出し")
         loaded_data = load_user_data_from_sheets()
+        st.write(f"🔍 復旧: {len(loaded_data)}件のデータを受信")
+        
         if loaded_data:
+            # セッション状態を更新
             st.session_state.survey_history = loaded_data
             st.session_state.current_index = len(loaded_data) - 1
-            st.session_state.all_submissions.extend([asdict(survey) for survey in loaded_data])
+            
+            # 送信データリストに追加
+            for survey in loaded_data:
+                st.session_state.all_submissions.append(asdict(survey))
+            
+            # 保存データリストに追加
             if 'saved_data' not in st.session_state:
                 st.session_state.saved_data = []
-            st.session_state.saved_data.extend([asdict(survey) for survey in loaded_data])
+            for survey in loaded_data:
+                st.session_state.saved_data.append(asdict(survey))
+            
+            st.write(f"🔍 復旧完了: セッション状態を更新")
+            st.write(f"🔍 survey_history件数: {len(st.session_state.survey_history)}")
+            st.write(f"🔍 current_index: {st.session_state.current_index}")
+            
             st.success(f"✅ {len(loaded_data)}件のアンケートデータを復旧しました")
         else:
             st.info("復旧できるデータが見つかりませんでした")
+        
+        # 復旧オプションを非表示にする
         st.session_state.show_recovery_option = False
+        st.write("🔍 復旧: ページを再読み込みします")
         st.rerun()
+        
     except Exception as e:
-        st.error(f"データ復旧エラー: {e}")
+        st.error(f"❌ データ復旧エラー: {e}")
+        import traceback
+        st.error(f"❌ スタックトレース: {traceback.format_exc()}")
 
 def initialize_session():
     """セッション初期化"""
