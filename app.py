@@ -249,7 +249,7 @@ def main():
                 "小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生",
                 "中学1年生", "中学2年生", "中学3年生"
             ]
-            grade_index = grade_options.index(current_survey.grade) if current_survey.grade in grade_options else 0
+            grade_index = grade_options.index(current_survey.grade) if current_survey.grade in grade_options else 5  # 小学6年生をデフォルト
             grade = st.selectbox("学年", grade_options, index=grade_index)
             
             # 性別
@@ -285,8 +285,8 @@ def main():
                 if st.checkbox(item, value=item in current_survey.triggers, key=f"trigger_{item}"):
                     triggers.append(item)
             
-            st.markdown("### 2. 受験の決め手となった要因（最大3つまで選択）")
-            decision_factors = [
+            st.markdown("### 2. 受験の決め手となった要因（複数選択可）")
+            decision_factor_items = [
                 "日本大学への内部進学率の高さ",
                 "中高一貫教育（6年間）のカリキュラム",
                 "先生と生徒の距離が近い校風",
@@ -299,10 +299,12 @@ def main():
                 "進路指導・学習サポートの充実",
                 "校訓「真・健・和」への共感",
                 "文武両道の実現が可能",
-                "その他"
+                "その他（決め手）"
             ]
-            selected_factors = st.multiselect("受験の決め手（最大3つ）", decision_factors, 
-                                            default=current_survey.decision_factors, max_selections=3)
+            decision_factors = []
+            for item in decision_factor_items:
+                if st.checkbox(item, value=item in current_survey.decision_factors, key=f"decision_{item}"):
+                    decision_factors.append(item)
             
             st.markdown("### 3. 特に魅力を感じた教育内容（複数選択可）")
             education_items = [
@@ -369,7 +371,7 @@ def main():
                     "gender": gender,
                     "area": area,
                     "triggers": triggers,
-                    "decision_factors": selected_factors,
+                    "decision_factors": decision_factors,
                     "education_attractions": education_attractions,
                     "expectations": expectations,
                     "info_sources": info_sources
