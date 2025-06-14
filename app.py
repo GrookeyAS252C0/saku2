@@ -29,6 +29,7 @@ class SurveyResponse:
     education_attractions: List[str]
     expectations: List[str]
     info_sources: List[str]
+    venue: str = ""
     submitted: bool = False
 
 # セッション状態の初期化
@@ -43,6 +44,8 @@ if 'all_submissions' not in st.session_state:
 
 def create_new_survey():
     """新しいアンケートを作成"""
+    venue_name = get_venue_info()  # URLパラメータから会場を取得
+    
     new_survey = SurveyResponse(
         id=str(uuid.uuid4()),
         timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
@@ -54,6 +57,7 @@ def create_new_survey():
         education_attractions=[],
         expectations=[],
         info_sources=[],
+        venue=venue_name,
         submitted=False
     )
     st.session_state.survey_history.append(new_survey)
@@ -110,7 +114,7 @@ def save_to_google_sheets(data: Dict[str, Any]):
             headers = worksheet.row_values(1)
             if not headers:
                 headers = [
-                    "ID", "送信日時", "学年", "性別", "地域",
+                    "ID", "送信日時", "会場", "学年", "性別", "地域",
                     "きっかけ", "決め手", "教育内容", "期待", "情報源"
                 ]
                 worksheet.insert_row(headers, 1)
@@ -122,6 +126,7 @@ def save_to_google_sheets(data: Dict[str, Any]):
         row_data = [
             data.get("id", ""),
             data.get("timestamp", ""),
+            data.get("venue", ""),
             data.get("grade", ""),
             data.get("gender", ""),
             data.get("area", ""),
@@ -183,9 +188,30 @@ def check_google_sheets_connection():
     except Exception as e:
         return False, f"❌ Google Sheets接続エラー: {str(e)[:100]}..."
 
+def get_venue_info():
+    """URLパラメータから会場情報を取得"""
+    try:
+        # Streamlit 1.32以降の新しいAPI
+        params = st.query_params
+        venue_code = params.get('venue', '')
+        
+        if venue_code == 'a':
+            return "A会場"
+        elif venue_code == 'b':
+            return "B会場"
+        else:
+            return "メイン会場"
+    except:
+        return "メイン会場"
+
 def main():
+    # 会場情報を取得
+    venue_name = get_venue_info()
+    
     # ヘッダー
     st.title("🏫 日本大学第一中学・高等学校 学校説明会アンケート")
+    if venue_name != "メイン会場":
+        st.info(f"📍 会場：{venue_name}")
     st.markdown("日大一に興味をもっていただき、ありがとうございます。")
     
     # メインレイアウト：左側（アンケート）、右側（情報リンク）
@@ -381,8 +407,12 @@ def render_survey_input(current_survey):
             submit_button = st.form_submit_button("✅ 確定して送信", type="primary", use_container_width=True)
         
         if save_button or submit_button:
+            # 会場情報を取得
+            venue_name = get_venue_info()
+            
             # データを保存
             survey_data = {
+                "venue": venue_name,  # 会場情報を自動追加
                 "grade": grade,
                 "gender": gender,
                 "area": area,
@@ -410,6 +440,9 @@ def render_submitted_survey(current_survey):
     
     # 送信済みデータの表示
     with st.expander("📋 送信内容を確認", expanded=True):
+        # 会場情報があれば表示
+        if hasattr(current_survey, 'venue') and current_survey.venue:
+            st.write(f"**会場:** {current_survey.venue}")
         st.write(f"**学年:** {current_survey.grade}")
         st.write(f"**性別:** {current_survey.gender}")
         st.write(f"**地域:** {current_survey.area}")
