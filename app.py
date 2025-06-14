@@ -46,8 +46,15 @@ def create_new_survey():
     """新しいアンケートを作成"""
     venue_name = get_venue_info()  # URLパラメータから会場を取得
     
+    # ユーザーセッションIDがない場合は生成
+    if 'user_session_id' not in st.session_state:
+        st.session_state.user_session_id = str(uuid.uuid4())
+    
+    # ユーザーセッションIDの最初の8文字をIDに含める
+    survey_id = f"{st.session_state.user_session_id[:8]}_{str(uuid.uuid4())[:8]}"
+    
     new_survey = SurveyResponse(
-        id=str(uuid.uuid4()),
+        id=survey_id,
         timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
         grade="",
         gender="",
@@ -175,10 +182,14 @@ def save_to_cloud_storage(data: Dict[str, Any]):
     success = save_to_google_sheets(data)
     if success:
         st.success("✅ Google Sheetsに保存しました")
+    else:
+        st.error("❌ Google Sheetsへの保存に失敗しました")
+        return False
     
     # ダウンロード用のデータを準備
     df = pd.DataFrame(st.session_state.saved_data)
     st.session_state.export_data = df
+    return True
 
 def navigate_previous():
     """前のアンケートに戻る"""
@@ -191,6 +202,55 @@ def navigate_next():
     if st.session_state.current_index < len(st.session_state.survey_history) - 1:
         st.session_state.current_index += 1
         st.session_state.editing_mode = True
+
+def load_user_data_from_sheets():
+    """Google Sheetsからユーザーのアンケートデータを読み込む"""
+    try:
+        credentials = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=['https://spreadsheets.google.com/feeds',
+                    'https://www.googleapis.com/auth/drive']
+        )
+        gc = gspread.authorize(credentials)
+        spreadsheet_name = st.secrets["google_sheets"]["spreadsheet_name"]
+        sh = gc.open(spreadsheet_name)
+        worksheet = sh.sheet1
+        
+        # ユーザーIDがセッションに保存されている場合のみ読み込み
+        if 'user_session_id' not in st.session_state:
+            st.session_state.user_session_id = str(uuid.uuid4())
+            return []
+        
+        user_id = st.session_state.user_session_id
+        
+        # シートからデータを取得
+        all_data = worksheet.get_all_records()
+        user_data = []
+        
+        for row in all_data:
+            # ユーザーIDが一致する、または未送信データを取得
+            if str(row.get('ID', '')).startswith(user_id[:8]):  # IDの最初の8文字で判定
+                survey = SurveyResponse(
+                    id=row.get('ID', ''),
+                    timestamp=row.get('送信日時', ''),
+                    venue=row.get('会場', 'メイン会場'),
+                    grade=row.get('学年', ''),
+                    gender=row.get('性別', ''),
+                    area=row.get('地域', ''),
+                    triggers=row.get('きっかけ', '').split(', ') if row.get('きっかけ') else [],
+                    decision_factors=row.get('決め手', '').split(', ') if row.get('決め手') else [],
+                    education_attractions=row.get('教育内容', '').split(', ') if row.get('教育内容') else [],
+                    expectations=row.get('期待', '').split(', ') if row.get('期待') else [],
+                    info_sources=row.get('情報源', '').split(', ') if row.get('情報源') else [],
+                    submitted=True
+                )
+                user_data.append(survey)
+        
+        return user_data
+        
+    except Exception as e:
+        # 接続エラーの場合は空のリストを返す
+        return []
 
 def check_google_sheets_connection():
     """Google Sheets接続状態をチェック"""
@@ -223,7 +283,45 @@ def get_venue_info():
     except:
         return "メイン会場"
 
+def recover_user_data():
+    """ユーザーデータを復旧"""
+    try:
+        loaded_data = load_user_data_from_sheets()
+        if loaded_data:
+            st.session_state.survey_history = loaded_data
+            st.session_state.current_index = len(loaded_data) - 1
+            st.session_state.all_submissions.extend([asdict(survey) for survey in loaded_data])
+            if 'saved_data' not in st.session_state:
+                st.session_state.saved_data = []
+            st.session_state.saved_data.extend([asdict(survey) for survey in loaded_data])
+            st.success(f"✅ {len(loaded_data)}件のアンケートデータを復旧しました")
+        else:
+            st.info("復旧できるデータが見つかりませんでした")
+        st.session_state.show_recovery_option = False
+        st.rerun()
+    except Exception as e:
+        st.error(f"データ復旧エラー: {e}")
+
+def initialize_session():
+    """セッション初期化"""
+    # ユーザーセッションIDを設定（ブラウザセッション間で永続化）
+    if 'user_session_id' not in st.session_state:
+        st.session_state.user_session_id = str(uuid.uuid4())
+    
+    # 初期化フラグ
+    if 'initialized' not in st.session_state:
+        st.session_state.initialized = True
+        
+        # Google Sheets接続確認とデータ復旧の案内
+        connection_status, _ = check_google_sheets_connection()
+        if connection_status:
+            # アプリ上部に復旧オプションを表示
+            st.session_state.show_recovery_option = True
+
 def main():
+    # セッション初期化
+    initialize_session()
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -237,6 +335,19 @@ def main():
     left_col, right_col = st.columns([2, 1])
     
     with left_col:
+        # データ復旧オプションの表示
+        if hasattr(st.session_state, 'show_recovery_option') and st.session_state.show_recovery_option:
+            if not st.session_state.survey_history:  # まだアンケートがない場合
+                st.info("💡 以前のアンケートデータを復旧できます")
+                col_recover, col_skip = st.columns(2)
+                with col_recover:
+                    if st.button("📥 データを復旧", use_container_width=True):
+                        recover_user_data()
+                with col_skip:
+                    if st.button("🆕 新規開始", use_container_width=True):
+                        st.session_state.show_recovery_option = False
+                        st.rerun()
+        
         # Google Sheets接続状態を表示
         with st.expander("🔗 データ保存状態", expanded=False):
             connection_status, message = check_google_sheets_connection()
