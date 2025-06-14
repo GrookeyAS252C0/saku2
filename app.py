@@ -760,7 +760,7 @@ def render_info_sidebar():
         </div>
     </a>
     """, unsafe_allow_html=True)
-    st.markdown("- [学校行事・年間予定](placeholder)")
+    st.markdown("- [📅 学校行事・年間予定](https://calendar.google.com/calendar/u/2?cid=bmljaGlkYWkxLmhhaXNoaW5AZ21haWwuY29t)")
     
     st.markdown("#### 📖 進路について")
     st.markdown("- [日本大学進学実績](placeholder)")
