@@ -11,7 +11,7 @@ import time
 
 # ページ設定
 st.set_page_config(
-    page_title="学校説明会アンケート",
+    page_title="日本大学第一中学・高等学校 学校説明会アンケート",
     page_icon="🏫",
     layout="wide"
 )
@@ -185,8 +185,8 @@ def check_google_sheets_connection():
 
 def main():
     # ヘッダー
-    st.title("🏫 学校説明会アンケート")
-    st.markdown("個別相談にお越しいただき、ありがとうございます。")
+    st.title("🏫 日本大学第一中学・高等学校 学校説明会アンケート")
+    st.markdown("日大一に興味をもっていただき、ありがとうございます。")
     
     # Google Sheets接続状態を表示
     with st.expander("🔗 データ保存状態", expanded=False):
