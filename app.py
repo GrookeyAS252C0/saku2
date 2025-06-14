@@ -96,6 +96,9 @@ def submit_survey():
 def save_to_google_sheets(data: Dict[str, Any]):
     """Google Sheetsにデータを保存"""
     try:
+        # デバッグ情報
+        st.write("🔍 デバッグ: Google Sheets保存開始")
+        
         # Google Sheets認証
         credentials = Credentials.from_service_account_info(
             st.secrets["gcp_service_account"],
@@ -103,70 +106,63 @@ def save_to_google_sheets(data: Dict[str, Any]):
                     'https://www.googleapis.com/auth/drive']
         )
         gc = gspread.authorize(credentials)
+        st.write("🔍 デバッグ: 認証完了")
         
         # スプレッドシートを開く
         spreadsheet_name = st.secrets["google_sheets"]["spreadsheet_name"]
         try:
             sh = gc.open(spreadsheet_name)
+            st.write("🔍 デバッグ: スプレッドシート接続完了")
         except gspread.SpreadsheetNotFound:
             # スプレッドシートが存在しない場合は作成
             sh = gc.create(spreadsheet_name)
             # 共有設定（編集可能）
             sh.share(st.secrets["google_sheets"].get("share_email", ""), perm_type='user', role='writer')
+            st.write("🔍 デバッグ: 新規スプレッドシート作成完了")
         
         worksheet = sh.sheet1
+        st.write("🔍 デバッグ: ワークシート取得完了")
         
-        # ヘッダーを設定（初回のみ、または古いフォーマットの場合は更新）
+        # ヘッダーを設定（エラー回避のため簡略化）
+        st.write("🔍 デバッグ: ヘッダー設定開始")
         try:
-            headers = []
+            # まずシートの状態を確認
+            st.write("🔍 デバッグ: シート状態確認開始")
             try:
-                headers = worksheet.row_values(1)
-                if headers is None:
-                    headers = []
-            except Exception:
-                headers = []
-            
-            expected_headers = [
-                "ID", "送信日時", "会場", "学年", "性別", "地域",
-                "きっかけ", "決め手", "教育内容", "期待", "情報源"
-            ]
-            
-            # ヘッダーがない場合は新規作成
-            if not headers or len(headers) == 0:
-                worksheet.insert_row(expected_headers, 1)
-                st.info("✅ Google Sheetsにヘッダーを作成しました")
-            
-            # 古いフォーマット（会場列がない）の場合は「会場」列を挿入
-            elif "会場" not in headers and len(headers) >= 2:
-                try:
-                    # 「送信日時」の後（3列目）に「会場」を挿入
-                    worksheet.insert_cols(3, 1)
-                    worksheet.update_cell(1, 3, "会場")
-                    st.info("✅ Google Sheetsに「会場」列を追加しました")
+                all_data = worksheet.get_all_records()
+                st.write(f"🔍 デバッグ: レコード取得完了、件数: {len(all_data) if all_data else 0}")
+                
+                if not all_data:  # データがない場合は新規作成
+                    st.write("🔍 デバッグ: 新規ヘッダー作成開始")
+                    expected_headers = [
+                        "ID", "送信日時", "会場", "学年", "性別", "地域",
+                        "きっかけ", "決め手", "教育内容", "期待", "情報源"
+                    ]
+                    worksheet.insert_row(expected_headers, 1)
+                    st.info("✅ Google Sheetsにヘッダーを作成しました")
+                else:
+                    st.write("🔍 デバッグ: 既存データあり、ヘッダーチェック開始")
+                    # データがある場合は既存のヘッダーをチェック
+                    first_row = worksheet.row_values(1)
+                    st.write(f"🔍 デバッグ: 1行目取得完了: {first_row}")
                     
-                    # 既存データには「メイン会場」を設定（簡略化）
-                    try:
-                        all_values = worksheet.get_all_values()
-                        if all_values and len(all_values) > 1:
-                            # バッチ更新で効率化
-                            updates = []
-                            for row in range(2, min(len(all_values) + 1, 100)):  # 最大99件まで
-                                updates.append(f"C{row}")
-                            if updates:
-                                worksheet.batch_update([{
-                                    'range': f"C2:C{len(all_values)}",
-                                    'values': [["メイン会場"]] * (len(all_values) - 1)
-                                }])
-                                st.info("✅ 既存データに「メイン会場」を設定しました")
-                    except Exception as e:
-                        # データ設定でエラーが発生しても処理を続行
-                        st.warning(f"既存データの更新をスキップしました")
-                except Exception as e:
-                    st.warning(f"列の追加中にエラー: {str(e)[:50]}...")
-                    
+                    if first_row and "会場" not in first_row:
+                        # 会場列がない場合の警告のみ（自動修正はスキップ）
+                        st.warning("⚠️ 古いフォーマットのシートです。手動で「会場」列を追加することをお勧めします。")
+            except Exception as header_error:
+                # ヘッダー処理でエラーが発生した場合は詳細を表示
+                st.error(f"❌ ヘッダー処理エラーの詳細: {str(header_error)}")
+                st.error(f"❌ エラータイプ: {type(header_error)}")
+                import traceback
+                st.error(f"❌ スタックトレース: {traceback.format_exc()}")
+                
         except Exception as e:
-            st.warning(f"ヘッダー設定でエラーが発生しましたが、データ保存は継続します: {str(e)[:50]}...")
-            # エラーが発生してもデータ保存は継続
+            # 全体的なエラーハンドリング
+            st.error(f"❌ シート設定エラーの詳細: {str(e)}")
+            st.error(f"❌ エラータイプ: {type(e)}")
+            import traceback
+            st.error(f"❌ スタックトレース: {traceback.format_exc()}")
+            pass
         
         # データを整形
         row_data = [
