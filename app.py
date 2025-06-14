@@ -93,11 +93,71 @@ def submit_survey():
         
         st.session_state.editing_mode = False
 
-def save_to_google_sheets(data: Dict[str, Any]):
-    """Google Sheetsにデータを保存"""
+def update_existing_record_in_sheets(data: Dict[str, Any]):
+    """既存レコードをGoogle Sheetsで更新"""
     try:
-        # デバッグ情報
-        st.write("🔍 デバッグ: Google Sheets保存開始")
+        st.write(f"🔍 既存レコード更新開始: ID={data.get('id', 'N/A')}")
+        
+        # Google Sheets認証
+        credentials = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=['https://spreadsheets.google.com/feeds',
+                    'https://www.googleapis.com/auth/drive']
+        )
+        gc = gspread.authorize(credentials)
+        
+        # スプレッドシートを開く
+        spreadsheet_name = st.secrets["google_sheets"]["spreadsheet_name"]
+        sh = gc.open(spreadsheet_name)
+        worksheet = sh.sheet1
+        
+        # 既存レコードを検索
+        all_data = worksheet.get_all_values()
+        target_id = data.get('id', '')
+        
+        for row_index, row in enumerate(all_data):
+            if len(row) > 0 and row[0] == target_id:  # IDが一致
+                # 行番号（1ベース）
+                sheet_row = row_index + 1
+                st.write(f"🔍 既存レコード発見: 行{sheet_row}")
+                
+                # データを整形
+                row_data = [
+                    data.get("id", ""),
+                    data.get("timestamp", ""),
+                    data.get("venue", ""),
+                    data.get("grade", ""),
+                    data.get("gender", ""),
+                    data.get("area", ""),
+                    ", ".join(data.get("triggers", [])),
+                    ", ".join(data.get("decision_factors", [])),
+                    ", ".join(data.get("education_attractions", [])),
+                    ", ".join(data.get("expectations", [])),
+                    ", ".join(data.get("info_sources", []))
+                ]
+                
+                # 行を更新
+                worksheet.update(f'A{sheet_row}:K{sheet_row}', [row_data])
+                st.success(f"✅ 既存レコード（行{sheet_row}）を更新しました")
+                return True
+        
+        # 既存レコードが見つからない場合
+        st.warning("⚠️ 既存レコードが見つかりません。新規レコードとして追加します。")
+        return False
+        
+    except Exception as e:
+        st.error(f"❌ 既存レコード更新エラー: {e}")
+        return False
+
+def save_to_google_sheets(data: Dict[str, Any]):
+    """Google Sheetsにデータを保存（新規/更新自動判別）"""
+    try:
+        # まず既存レコードの更新を試行
+        if update_existing_record_in_sheets(data):
+            return True  # 更新成功
+        
+        # 既存レコードがない場合は新規追加
+        st.write("🔍 デバッグ: 新規レコード追加開始")
         
         # Google Sheets認証
         credentials = Credentials.from_service_account_info(
@@ -607,6 +667,11 @@ def render_survey_input(current_survey):
             save_current_survey(survey_data)
             
             if submit_button:
+                # 既存データの再送信の場合、タイムスタンプを更新
+                if current_survey.submitted:
+                    st.info("📝 既存データを更新して再送信します")
+                    current_survey.timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                
                 submit_survey()
                 st.balloons()
                 # 少し待ってから画面をリフレッシュ
@@ -619,6 +684,10 @@ def render_survey_input(current_survey):
 def render_submitted_survey(current_survey):
     """送信済みアンケートの表示"""
     st.success(f"✅ このアンケートは送信済みです（送信日時: {current_survey.timestamp}）")
+    
+    # ID情報の表示（デバッグ用）
+    if hasattr(current_survey, 'id'):
+        st.caption(f"📄 アンケートID: {current_survey.id}")
     
     # 送信済みデータの表示
     with st.expander("📋 送信内容を確認", expanded=True):
@@ -634,9 +703,19 @@ def render_submitted_survey(current_survey):
         st.write(f"**期待:** {', '.join(current_survey.expectations)}")
         st.write(f"**情報源:** {', '.join(current_survey.info_sources)}")
     
-    if st.button("📝 このアンケートを編集", use_container_width=True):
-        st.session_state.editing_mode = True
-        st.rerun()
+    col1, col2 = st.columns(2)
+    with col1:
+        if st.button("📝 このアンケートを編集", use_container_width=True):
+            st.session_state.editing_mode = True
+            st.rerun()
+    with col2:
+        if st.button("🔄 Google Sheetsで確認", use_container_width=True):
+            # Google Sheetsのリンクを表示（可能な場合）
+            try:
+                spreadsheet_name = st.secrets["google_sheets"]["spreadsheet_name"]
+                st.info(f"📊 Google Sheets: {spreadsheet_name} で確認してください")
+            except:
+                st.info("📊 Google Sheetsで確認してください")
 
 def render_info_sidebar():
     """右側の情報リンクサイドバーを描画"""
