@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import json
 import uuid
 from dataclasses import dataclass, asdict
@@ -8,6 +8,13 @@ from typing import List, Dict, Any
 import gspread
 from google.oauth2.service_account import Credentials
 import time
+
+# 日本時間（JST）の設定
+JST = timezone(timedelta(hours=+9))
+
+def get_jst_now():
+    """現在の日本時間を取得"""
+    return datetime.now(JST)
 
 # ページ設定
 st.set_page_config(
@@ -32,6 +39,9 @@ class SurveyResponse:
     venue: str = ""
     submitted: bool = False
 
+# 本番環境設定
+DEBUG_MODE = False  # 本番環境ではFalseに設定
+
 # セッション状態の初期化
 if 'survey_history' not in st.session_state:
     st.session_state.survey_history = []
@@ -55,7 +65,7 @@ def create_new_survey():
     
     new_survey = SurveyResponse(
         id=survey_id,
-        timestamp=datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+        timestamp=get_jst_now().strftime('%Y-%m-%d %H:%M:%S'),
         grade="",
         gender="",
         area="",
@@ -83,7 +93,7 @@ def submit_survey():
     if st.session_state.current_index >= 0:
         current_survey = st.session_state.survey_history[st.session_state.current_index]
         current_survey.submitted = True
-        current_survey.timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        current_survey.timestamp = get_jst_now().strftime('%Y-%m-%d %H:%M:%S')
         
         # 全体の送信リストに追加
         st.session_state.all_submissions.append(asdict(current_survey))
@@ -96,7 +106,7 @@ def submit_survey():
 def update_existing_record_in_sheets(data: Dict[str, Any]):
     """既存レコードをGoogle Sheetsで更新"""
     try:
-        st.write(f"🔍 既存レコード更新開始: ID={data.get('id', 'N/A')}")
+        # st.write(f"🔍 既存レコード更新開始: ID={data.get('id', 'N/A')}")
         
         # Google Sheets認証
         credentials = Credentials.from_service_account_info(
@@ -157,7 +167,6 @@ def save_to_google_sheets(data: Dict[str, Any]):
             return True  # 更新成功
         
         # 既存レコードがない場合は新規追加
-        st.write("🔍 デバッグ: 新規レコード追加開始")
         
         # Google Sheets認証
         credentials = Credentials.from_service_account_info(
@@ -166,34 +175,26 @@ def save_to_google_sheets(data: Dict[str, Any]):
                     'https://www.googleapis.com/auth/drive']
         )
         gc = gspread.authorize(credentials)
-        st.write("🔍 デバッグ: 認証完了")
         
         # スプレッドシートを開く
         spreadsheet_name = st.secrets["google_sheets"]["spreadsheet_name"]
         try:
             sh = gc.open(spreadsheet_name)
-            st.write("🔍 デバッグ: スプレッドシート接続完了")
         except gspread.SpreadsheetNotFound:
             # スプレッドシートが存在しない場合は作成
             sh = gc.create(spreadsheet_name)
             # 共有設定（編集可能）
             sh.share(st.secrets["google_sheets"].get("share_email", ""), perm_type='user', role='writer')
-            st.write("🔍 デバッグ: 新規スプレッドシート作成完了")
         
         worksheet = sh.sheet1
-        st.write("🔍 デバッグ: ワークシート取得完了")
         
         # ヘッダーを設定（エラー回避のため簡略化）
-        st.write("🔍 デバッグ: ヘッダー設定開始")
         try:
             # まずシートの状態を確認
-            st.write("🔍 デバッグ: シート状態確認開始")
             try:
                 all_data = worksheet.get_all_records()
-                st.write(f"🔍 デバッグ: レコード取得完了、件数: {len(all_data) if all_data else 0}")
                 
                 if not all_data:  # データがない場合は新規作成
-                    st.write("🔍 デバッグ: 新規ヘッダー作成開始")
                     expected_headers = [
                         "ID", "送信日時", "会場", "学年", "性別", "地域",
                         "きっかけ", "決め手", "教育内容", "期待", "情報源"
@@ -201,10 +202,8 @@ def save_to_google_sheets(data: Dict[str, Any]):
                     worksheet.insert_row(expected_headers, 1)
                     st.info("✅ Google Sheetsにヘッダーを作成しました")
                 else:
-                    st.write("🔍 デバッグ: 既存データあり、ヘッダーチェック開始")
                     # データがある場合は既存のヘッダーをチェック
                     first_row = worksheet.row_values(1)
-                    st.write(f"🔍 デバッグ: 1行目取得完了: {first_row}")
                     
                     if first_row and "会場" not in first_row:
                         # 会場列がない場合の警告のみ（自動修正はスキップ）
@@ -316,7 +315,7 @@ def load_user_data_from_sheets():
                 
                 survey = SurveyResponse(
                     id=str(row.get('ID', f'restored_{i}')),
-                    timestamp=str(row.get('送信日時', datetime.now().strftime('%Y-%m-%d %H:%M:%S'))),
+                    timestamp=str(row.get('送信日時', get_jst_now().strftime('%Y-%m-%d %H:%M:%S'))),
                     venue=str(row.get('会場', 'メイン会場')),
                     grade=str(row.get('学年', '')),
                     gender=str(row.get('性別', '')),
@@ -400,14 +399,17 @@ def recover_user_data():
             st.write(f"🔍 survey_history件数: {len(st.session_state.survey_history)}")
             st.write(f"🔍 current_index: {st.session_state.current_index}")
             
+            # 復旧完了フラグを設定
+            st.session_state.recovery_completed = True
+            st.session_state.show_recovery_option = False
+            
             st.success(f"✅ {len(loaded_data)}件のアンケートデータを復旧しました")
+            
+            # ページを更新せず、フラグのみ設定
+            # st.rerun()を削除して、main関数内で表示を制御
         else:
             st.info("復旧できるデータが見つかりませんでした")
-        
-        # 復旧オプションを非表示にする
-        st.session_state.show_recovery_option = False
-        st.write("🔍 復旧: ページを再読み込みします")
-        st.rerun()
+            st.session_state.show_recovery_option = False
         
     except Exception as e:
         st.error(f"❌ データ復旧エラー: {e}")
@@ -460,6 +462,12 @@ def main():
                         st.session_state.show_recovery_option = False
                         st.rerun()
         
+        # 復旧完了メッセージの表示
+        if hasattr(st.session_state, 'recovery_completed') and st.session_state.recovery_completed:
+            st.success(f"✅ {len(st.session_state.survey_history)}件のアンケートデータを復旧しました")
+            # 復旧完了フラグをリセット
+            st.session_state.recovery_completed = False
+        
         # Google Sheets接続状態を表示
         with st.expander("🔗 データ保存状態", expanded=False):
             connection_status, message = check_google_sheets_connection()
@@ -500,7 +508,7 @@ def main():
                 st.download_button(
                     label="📥 データ出力",
                     data=csv.encode('utf-8-sig'),
-                    file_name=f"survey_{datetime.now().strftime('%Y%m%d_%H%M')}.csv",
+                    file_name=f"survey_{get_jst_now().strftime('%Y%m%d_%H%M')}.csv",
                     mime="text/csv"
                 )
     
@@ -670,7 +678,7 @@ def render_survey_input(current_survey):
                 # 既存データの再送信の場合、タイムスタンプを更新
                 if current_survey.submitted:
                     st.info("📝 既存データを更新して再送信します")
-                    current_survey.timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+                    current_survey.timestamp = get_jst_now().strftime('%Y-%m-%d %H:%M:%S')
                 
                 submit_survey()
                 st.balloons()
@@ -719,44 +727,29 @@ def render_submitted_survey(current_survey):
 
 def render_info_sidebar():
     """右側の情報リンクサイドバーを描画"""
-    st.markdown("### 📚 よくある質問・学校情報")
+    st.markdown("### 📚 日大一FAQ")
     
-    # よくある質問のカテゴリ
-    st.markdown("#### 🎓 入試・受験について")
-    st.markdown("- [入試要項・日程](placeholder)")
-    st.markdown("- [偏差値・合格ライン](placeholder)")
-    st.markdown("- [過去問・入試対策](placeholder)")
-    st.markdown("- [特待生制度](placeholder)")
+    st.markdown("#### 🎓 入試について")
+    st.markdown("- [昨年度の入試要項](placeholder)")
+    st.markdown("- [合格最低点](placeholder)")
+    st.markdown("- [偏差値](placeholder)")
     
     st.markdown("#### 🏫 学校生活について")
-    st.markdown("- [制服・校則](placeholder)")
     st.markdown("- [部活動一覧](placeholder)")
     st.markdown("- [学校行事・年間予定](placeholder)")
-    st.markdown("- [1日のスケジュール](placeholder)")
     
-    st.markdown("#### 📖 カリキュラム・進路")
-    st.markdown("- [中高一貫カリキュラム](placeholder)")
+    st.markdown("#### 📖 進路について")
     st.markdown("- [日本大学進学実績](placeholder)")
     st.markdown("- [他大学進学実績](placeholder)")
-    st.markdown("- [進路指導・サポート](placeholder)")
     
-    st.markdown("#### 🌏 国際教育・語学")
-    st.markdown("- [オーストラリア語学研修](placeholder)")
-    st.markdown("- [イングリッシュキャンプ](placeholder)")
-    st.markdown("- [英語教育の特色](placeholder)")
-    st.markdown("- [海外大学進学サポート](placeholder)")
+    st.markdown("#### 💰 学費について")
+    st.markdown("- [1年次学費](placeholder)")
+    st.markdown("- [学用品価格](placeholder)")
     
-    st.markdown("#### 💰 学費・奨学金")
-    st.markdown("- [学費一覧](placeholder)")
-    st.markdown("- [奨学金制度](placeholder)")
-    st.markdown("- [就学支援金](placeholder)")
-    st.markdown("- [その他費用](placeholder)")
-    
-    st.markdown("#### 🚇 通学・アクセス")
-    st.markdown("- [アクセス・最寄り駅](placeholder)")
-    st.markdown("- [スクールバス](placeholder)")
-    st.markdown("- [自転車通学](placeholder)")
-    st.markdown("- [周辺環境](placeholder)")
+    st.markdown("#### 🚇 通学・アクセスについて")
+    st.markdown("- [在校生最寄駅](placeholder)")
+    st.markdown("- [在校生乗り換え回数](placeholder)")
+    st.markdown("- [受験生通学区域](placeholder)")
     
     st.markdown("---")
     st.info("💡 各項目をクリックすると詳細ページが開きます（準備中）")
