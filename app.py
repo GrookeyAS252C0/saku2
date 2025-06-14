@@ -742,7 +742,24 @@ def render_info_sidebar():
     st.markdown("- [偏差値](placeholder)")
     
     st.markdown("#### 🏫 学校生活について")
-    st.markdown("- [🏃 部活動一覧](https://ckdasd5e7s5fktfua5bgyy.streamlit.app/)")
+    st.markdown("""
+    <a href="https://ckdasd5e7s5fktfua5bgyy.streamlit.app/" target="_blank" style="text-decoration: none;">
+        <div style="
+            background-color: #ff4b4b;
+            color: white;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            border: 1px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin: 0.25rem 0;
+        " onmouseover="this.style.backgroundColor='#ff2b2b'" onmouseout="this.style.backgroundColor='#ff4b4b'">
+            🏃 部活動一覧
+        </div>
+    </a>
+    """, unsafe_allow_html=True)
     st.markdown("- [学校行事・年間予定](placeholder)")
     
     st.markdown("#### 📖 進路について")
