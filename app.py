@@ -446,6 +446,11 @@ def main():
         show_exam_results_page()
         return
     
+    # 受験生動向データページの確認
+    if 'show_exam_data' in st.session_state and st.session_state.show_exam_data:
+        show_exam_data_page()
+        return
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -746,7 +751,9 @@ def render_info_sidebar():
     if st.button("📊 入試概要・合格最低点", use_container_width=True):
         st.session_state.show_exam_results = True
         st.rerun()
-    st.markdown("- [偏差値](placeholder)")
+    if st.button("📈 受験生動向データ", use_container_width=True):
+        st.session_state.show_exam_data = True
+        st.rerun()
     
     st.markdown("#### 🏫 学校生活について")
     st.markdown("""
@@ -816,6 +823,22 @@ def show_exam_results_page():
     
     # HTMLコンテンツを表示
     st.components.v1.html(EXAM_RESULTS_HTML, height=800, scrolling=True)
+
+def show_exam_data_page():
+    """受験生動向データページを表示"""
+    from exam_data_analysis import EXAM_DATA_HTML
+    
+    # ヘッダー
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("📈 2025年度 受験生動向データ")
+    with col2:
+        if st.button("⬅ アンケートに戻る", use_container_width=True):
+            st.session_state.show_exam_data = False
+            st.rerun()
+    
+    # HTMLコンテンツを表示
+    st.components.v1.html(EXAM_DATA_HTML, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()
