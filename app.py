@@ -651,10 +651,55 @@ def render_survey_form():
     else:
         render_submitted_survey(current_survey)
 
+def check_required_fields(survey_data):
+    """必須項目のチェックと警告メッセージを生成"""
+    missing_fields = []
+    warnings = []
+    
+    # 基本情報の必須チェック
+    if not survey_data.get("grade"):
+        missing_fields.append("学年")
+    if not survey_data.get("gender"):
+        missing_fields.append("性別") 
+    if not survey_data.get("area"):
+        missing_fields.append("地域")
+    
+    # 質問項目の最低1つ回答チェック
+    question_fields = ["triggers", "decision_factors", "education_attractions", "expectations", "info_sources"]
+    has_answers = any(survey_data.get(field) and len(survey_data[field]) > 0 for field in question_fields)
+    
+    if not has_answers:
+        missing_fields.append("質問項目（1〜5番）のうち最低1つ")
+    
+    return missing_fields, len(missing_fields) == 0
+
 def render_survey_input(current_survey):
     """アンケート入力フォームを描画"""
+    # 必須項目の説明を追加
+    st.info("🔴 は必須項目です。質問項目（1〜5番）は最低1つの回答が必要です。")
+    
+    # 現在の入力状況を表示
+    current_data = {
+        "grade": current_survey.grade,
+        "gender": current_survey.gender,
+        "area": current_survey.area,
+        "triggers": current_survey.triggers,
+        "decision_factors": current_survey.decision_factors,
+        "education_attractions": current_survey.education_attractions,
+        "expectations": current_survey.expectations,
+        "info_sources": current_survey.info_sources
+    }
+    missing_fields, is_complete = check_required_fields(current_data)
+    
+    if is_complete:
+        st.success("✅ 必須項目はすべて入力済みです。送信可能な状態です。")
+    elif missing_fields:
+        with st.expander("⚠️ 未入力の必須項目があります", expanded=False):
+            for field in missing_fields:
+                st.write(f"• {field}")
+    
     with st.form("survey_form"):
-        st.markdown("### 基本情報")
+        st.markdown("### 🔴 基本情報（必須）")
         
         # 学年
         grade_options = [
@@ -662,12 +707,12 @@ def render_survey_input(current_survey):
             "中学1年生", "中学2年生", "中学3年生"
         ]
         grade_index = grade_options.index(current_survey.grade) if current_survey.grade in grade_options else 5  # 小学6年生をデフォルト
-        grade = st.selectbox("学年", grade_options, index=grade_index)
+        grade = st.selectbox("🔴 学年（必須）", grade_options, index=grade_index)
         
         # 性別
         gender_options = ["男子", "女子", "回答しない"]
         gender_index = gender_options.index(current_survey.gender) if current_survey.gender in gender_options else 0
-        gender = st.radio("性別", gender_options, index=gender_index)
+        gender = st.radio("🔴 性別（必須）", gender_options, index=gender_index)
         
         # 地域
         area_options = [
@@ -677,9 +722,9 @@ def render_survey_input(current_survey):
             "千葉県 その他市町村", "埼玉県", "神奈川県", "その他"
         ]
         area_index = area_options.index(current_survey.area) if current_survey.area in area_options else 0
-        area = st.selectbox("お住まいの地域", area_options, index=area_index)
+        area = st.selectbox("🔴 お住まいの地域（必須）", area_options, index=area_index)
         
-        st.markdown("### 1. 学校を知ったきっかけ（複数選択可）")
+        st.markdown("### 🔴 1. 学校を知ったきっかけ（複数選択可・1〜5番のうち最低1つ必須）")
         trigger_items = [
             "学校説明会・体験授業への参加",
             "文化祭（櫻墨祭）への来校",
@@ -794,20 +839,23 @@ def render_survey_input(current_survey):
             }
             save_current_survey(survey_data)
             
+            # 必須項目のチェック
+            missing_fields, is_complete = check_required_fields(survey_data)
+            
             if save_button:
-                # 一時保存時にもデータの状態を確認
-                is_valid, validation_message = is_survey_data_valid(survey_data)
-                if is_valid:
+                # 一時保存時に詳細な状態表示
+                if is_complete:
                     st.success("💾 一時保存しました！データは送信可能な状態です。")
                 else:
-                    st.info(f"💾 一時保存しました。送信には追加入力が必要です：{validation_message}")
+                    st.info("💾 一時保存しました。")
+                    if missing_fields:
+                        st.warning(f"⚠️ 送信には以下の項目が必要です：{', '.join(missing_fields)}")
             
             if submit_button:
-                # データの有効性チェック
-                is_valid, validation_message = is_survey_data_valid(survey_data)
-                
-                if not is_valid:
-                    st.error(f"❌ 送信できません：{validation_message}")
+                if not is_complete:
+                    st.error("❌ 送信できません。以下の必須項目を入力してください：")
+                    for field in missing_fields:
+                        st.error(f"  • {field}")
                 else:
                     # 既存データの再送信の場合、タイムスタンプを更新
                     if current_survey.submitted:
