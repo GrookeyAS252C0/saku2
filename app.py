@@ -65,7 +65,7 @@ def create_new_survey():
     
     new_survey = SurveyResponse(
         id=survey_id,
-        timestamp=get_jst_now().strftime('%Y-%m-%d %H:%M:%S'),
+        timestamp="",  # 作成時は空にして、送信時にタイムスタンプを設定
         grade="",
         gender="",
         area="",
@@ -88,10 +88,39 @@ def save_current_survey(survey_data: Dict[str, Any]):
         for key, value in survey_data.items():
             setattr(current_survey, key, value)
 
+def is_survey_data_valid(survey_data):
+    """アンケートデータが有効かどうかを判定"""
+    # 必須項目：学年、性別、地域
+    if not survey_data.get("grade") or not survey_data.get("gender") or not survey_data.get("area"):
+        return False, "基本情報（学年・性別・地域）が未入力です"
+    
+    # 少なくとも1つの質問項目に回答があるかチェック
+    question_fields = ["triggers", "decision_factors", "education_attractions", "expectations", "info_sources"]
+    has_answers = False
+    
+    for field in question_fields:
+        if survey_data.get(field) and len(survey_data[field]) > 0:
+            has_answers = True
+            break
+    
+    if not has_answers:
+        return False, "質問項目（1〜5番）に少なくとも1つは回答してください"
+    
+    return True, "データは有効です"
+
 def submit_survey():
     """アンケートを確定して送信"""
     if st.session_state.current_index >= 0:
         current_survey = st.session_state.survey_history[st.session_state.current_index]
+        
+        # データの有効性をチェック
+        survey_dict = asdict(current_survey)
+        is_valid, message = is_survey_data_valid(survey_dict)
+        
+        if not is_valid:
+            st.error(f"❌ 送信できません：{message}")
+            return False
+        
         current_survey.submitted = True
         current_survey.timestamp = get_jst_now().strftime('%Y-%m-%d %H:%M:%S')
         
@@ -102,6 +131,7 @@ def submit_survey():
         save_to_cloud_storage(asdict(current_survey))
         
         st.session_state.editing_mode = False
+        return True
 
 def update_existing_record_in_sheets(data: Dict[str, Any]):
     """既存レコードをGoogle Sheetsで更新"""
@@ -162,6 +192,12 @@ def update_existing_record_in_sheets(data: Dict[str, Any]):
 def save_to_google_sheets(data: Dict[str, Any]):
     """Google Sheetsにデータを保存（新規/更新自動判別）"""
     try:
+        # データの有効性チェック
+        is_valid, validation_message = is_survey_data_valid(data)
+        if not is_valid:
+            st.warning(f"⚠️ Google Sheetsへの保存をスキップ：{validation_message}")
+            return False
+        
         # まず既存レコードの更新を試行
         if update_existing_record_in_sheets(data):
             return True  # 更新成功
@@ -689,18 +725,32 @@ def render_survey_input(current_survey):
             }
             save_current_survey(survey_data)
             
+            if save_button:
+                # 一時保存時にもデータの状態を確認
+                is_valid, validation_message = is_survey_data_valid(survey_data)
+                if is_valid:
+                    st.success("💾 一時保存しました！データは送信可能な状態です。")
+                else:
+                    st.info(f"💾 一時保存しました。送信には追加入力が必要です：{validation_message}")
+            
             if submit_button:
-                # 既存データの再送信の場合、タイムスタンプを更新
-                if current_survey.submitted:
-                    st.info("📝 既存データを更新して再送信します")
-                    current_survey.timestamp = get_jst_now().strftime('%Y-%m-%d %H:%M:%S')
+                # データの有効性チェック
+                is_valid, validation_message = is_survey_data_valid(survey_data)
                 
-                submit_survey()
-                st.balloons()
-                # 少し待ってから画面をリフレッシュ
-                time.sleep(1)
-            else:
-                st.success("💾 一時保存しました")
+                if not is_valid:
+                    st.error(f"❌ 送信できません：{validation_message}")
+                else:
+                    # 既存データの再送信の場合、タイムスタンプを更新
+                    if current_survey.submitted:
+                        st.info("📝 既存データを更新して再送信します")
+                        current_survey.timestamp = get_jst_now().strftime('%Y-%m-%d %H:%M:%S')
+                    
+                    success = submit_survey()
+                    if success:
+                        st.success("✅ アンケートを送信しました！ご協力ありがとうございました。")
+                        st.balloons()
+                        # 少し待ってから画面をリフレッシュ
+                        time.sleep(1)
             
             st.rerun()
 
