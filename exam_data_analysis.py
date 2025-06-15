@@ -108,301 +108,474 @@ EXAM_DATA_HTML = """<!DOCTYPE html>
         }
 
         .header h2 {
-            color: #2c3e50;
             font-size: 2.2rem;
             margin-bottom: 15px;
             font-weight: 700;
         }
 
-        .header .description {
+        .middle-school .header h2 {
+            color: #e67e22;
+        }
+
+        .high-school .header h2 {
+            color: #2980b9;
+        }
+
+        .header .subtitle {
             color: #7f8c8d;
             font-size: 1.1rem;
             margin-bottom: 20px;
-            line-height: 1.6;
         }
 
-        .stats-container {
+        .total-students {
+            padding: 15px 30px;
+            border-radius: 50px;
+            display: inline-block;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .middle-school .total-students {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+            box-shadow: 0 5px 15px rgba(243, 156, 18, 0.3);
+        }
+
+        .high-school .total-students {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .exam-type {
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: inline-block;
+            font-size: 1rem;
+            margin-top: 10px;
+            color: white;
+        }
+
+        .middle-school .exam-type {
+            background: linear-gradient(45deg, #e67e22, #d35400);
+        }
+
+        .high-school .exam-type {
+            background: linear-gradient(45deg, #2980b9, #1f4e79);
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section h3 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            position: relative;
+        }
+
+        .middle-school .section h3 {
+            color: #e67e22;
+            border-bottom: 3px solid #f39c12;
+        }
+
+        .middle-school .section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #e67e22;
+        }
+
+        .high-school .section h3 {
+            color: #2980b9;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .high-school .section h3::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: #2980b9;
+        }
+
+        .section h4 {
+            color: #34495e;
+            font-size: 1.3rem;
+            margin: 25px 0 15px 0;
+            padding-left: 15px;
+        }
+
+        .middle-school .section h4 {
+            border-left: 4px solid #f39c12;
+        }
+
+        .high-school .section h4 {
+            border-left: 4px solid #3498db;
+        }
+
+        .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            margin-bottom: 30px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .stat-box:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-        }
-
-        .stat-box h3 {
-            color: #2c3e50;
-            font-size: 1.5rem;
-            margin-bottom: 20px;
-            text-align: center;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
-        }
-
-        .middle-school .stat-box h3 {
-            border-bottom-color: #f39c12;
-        }
-
-        .high-school .stat-box h3 {
-            border-bottom-color: #3498db;
-        }
-
-        .trend-section {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .trend-section h3 {
-            color: #2c3e50;
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-            text-align: center;
-            border-bottom: 3px solid #e74c3c;
-            padding-bottom: 10px;
-        }
-
-        .trend-data {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 20px;
-            margin-top: 20px;
+            margin: 20px 0;
         }
 
-        .trend-item {
-            background: #f8f9fa;
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
             border-radius: 15px;
             padding: 20px;
             text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .middle-school .stat-card {
+            border-left: 5px solid #f39c12;
+        }
+
+        .high-school .stat-card {
             border-left: 5px solid #3498db;
         }
 
-        .middle-school .trend-item {
-            border-left-color: #f39c12;
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.1);
         }
 
-        .high-school .trend-item {
-            border-left-color: #3498db;
-        }
-
-        .trend-item .label {
-            font-size: 0.9rem;
-            color: #666;
-            margin-bottom: 10px;
-            font-weight: 500;
-        }
-
-        .trend-item .value {
-            font-size: 1.8rem;
+        .stat-card .number {
+            font-size: 2.5rem;
             font-weight: bold;
             color: #2c3e50;
             margin-bottom: 5px;
         }
 
-        .trend-item .change {
-            font-size: 0.85rem;
+        .stat-card .label {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .ranking-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .ranking-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #dee2e6;
+            transition: background 0.3s ease;
+        }
+
+        .ranking-item:last-child {
+            border-bottom: none;
+        }
+
+        .middle-school .ranking-item:hover {
+            background: rgba(243, 156, 18, 0.1);
+            border-radius: 5px;
+        }
+
+        .high-school .ranking-item:hover {
+            background: rgba(52, 152, 219, 0.1);
+            border-radius: 5px;
+        }
+
+        .rank {
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .middle-school .rank {
+            background: linear-gradient(45deg, #f39c12, #e67e22);
+        }
+
+        .middle-school .rank.top-3 {
+            background: linear-gradient(45deg, #e67e22, #d35400);
+        }
+
+        .high-school .rank {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+        }
+
+        .high-school .rank.top-3 {
+            background: linear-gradient(45deg, #2980b9, #1f4e79);
+        }
+
+        .school-name {
+            flex: 1;
             font-weight: 500;
         }
 
-        .trend-item .change.increase {
-            color: #e74c3c;
-        }
-
-        .trend-item .change.decrease {
-            color: #27ae60;
-        }
-
-        .private-schools-section {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-            backdrop-filter: blur(10px);
-        }
-
-        .private-schools-section h3 {
-            color: #2c3e50;
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-            text-align: center;
-            border-bottom: 3px solid #9b59b6;
-            padding-bottom: 10px;
-        }
-
-        .schools-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .school-item {
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            border: 2px solid #ecf0f1;
-            transition: all 0.3s ease;
-        }
-
-        .school-item:hover {
-            background: #e8f4f8;
-            border-color: #3498db;
-            transform: translateY(-2px);
-        }
-
-        .school-item .name {
+        .count {
             font-weight: bold;
             color: #2c3e50;
-            margin-bottom: 8px;
-            font-size: 0.95rem;
+            padding: 5px 10px;
+            border-radius: 20px;
         }
 
-        .school-item .deviation {
-            color: #7f8c8d;
-            font-size: 0.85rem;
+        .middle-school .count {
+            background: rgba(243, 156, 18, 0.1);
         }
 
-        .highlight-box {
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
-            color: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin: 30px 0;
-            text-align: center;
-            box-shadow: 0 10px 30px rgba(116, 185, 255, 0.3);
+        .high-school .count {
+            background: rgba(52, 152, 219, 0.1);
         }
 
-        .middle-school .highlight-box {
-            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
-            box-shadow: 0 10px 30px rgba(253, 203, 110, 0.3);
+        .chart {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
         }
 
-        .highlight-box h4 {
-            font-size: 1.3rem;
-            margin-bottom: 15px;
-            font-weight: 700;
-        }
-
-        .highlight-box p {
-            font-size: 1rem;
-            line-height: 1.6;
-            opacity: 0.95;
-        }
-
-        .comparison-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        .bar-chart {
             margin: 20px 0;
         }
 
-        .comparison-table th,
-        .comparison-table td {
-            padding: 15px 12px;
-            text-align: center;
-            border-bottom: 1px solid #e9ecef;
+        .bar-item {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
         }
 
-        .comparison-table th {
-            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+        .bar-label {
+            width: 100px;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .bar {
+            flex: 1;
+            height: 25px;
+            background: #ecf0f1;
+            border-radius: 12px;
+            overflow: hidden;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .bar-fill {
+            height: 100%;
+            transition: width 0.8s ease;
+            border-radius: 12px;
+        }
+
+        .middle-school .bar-fill {
+            background: linear-gradient(90deg, #f39c12, #e67e22);
+        }
+
+        .high-school .bar-fill {
+            background: linear-gradient(90deg, #3498db, #2980b9);
+        }
+
+        .bar-text {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
             color: white;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.8rem;
         }
 
-        .middle-school .comparison-table th {
-            background: linear-gradient(135deg, #fdcb6e 0%, #e17055 100%);
-        }
-
-        .comparison-table td {
-            font-size: 0.9rem;
-            transition: background-color 0.3s ease;
-        }
-
-        .comparison-table tbody tr:hover {
-            background-color: #f1f3ff;
-        }
-
-        .comparison-table .year-column {
-            font-weight: bold;
-            background: #f8f9fa;
-        }
-
-        .note-section {
-            background: rgba(255, 243, 196, 0.8);
-            border-left: 5px solid #f39c12;
+        .highlight-box {
             border-radius: 10px;
             padding: 20px;
-            margin: 30px 0;
+            margin: 20px 0;
         }
 
-        .note-section h4 {
-            color: #d68910;
-            font-size: 1.1rem;
-            margin-bottom: 10px;
-            font-weight: 700;
+        .middle-school .highlight-box {
+            background: linear-gradient(135deg, #fef5e7, #fdeaa7);
+            border-left: 5px solid #f39c12;
         }
 
-        .note-section p {
-            color: #7d6608;
+        .high-school .highlight-box {
+            background: linear-gradient(135deg, #e8f4f8, #d4f1f4);
+            border-left: 5px solid #3498db;
+        }
+
+        .gender-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .gender-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .middle-school .gender-card.male {
+            border-top: 5px solid #f39c12;
+        }
+
+        .middle-school .gender-card.female {
+            border-top: 5px solid #e67e22;
+        }
+
+        .high-school .gender-card.male {
+            border-top: 5px solid #3498db;
+        }
+
+        .high-school .gender-card.female {
+            border-top: 5px solid #2980b9;
+        }
+
+        .keyword-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .keyword-card {
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .middle-school .keyword-card {
+            background: linear-gradient(135deg, #fef9e7, #fef5e7);
+            border-top: 3px solid #f39c12;
+        }
+
+        .high-school .keyword-card {
+            background: linear-gradient(135deg, #e8f4f8, #e1f5fe);
+            border-top: 3px solid #3498db;
+        }
+
+        .keyword-card .keyword {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .middle-school .keyword-card .keyword {
+            color: #e67e22;
+        }
+
+        .high-school .keyword-card .keyword {
+            color: #2980b9;
+        }
+
+        .keyword-card .stats {
+            color: #7f8c8d;
             font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 8px;
+        }
+
+        .trend-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .trend-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .middle-school .trend-card.tokyo {
+            border-top: 5px solid #f39c12;
+        }
+
+        .middle-school .trend-card.chiba {
+            border-top: 5px solid #e67e22;
+        }
+
+        .high-school .trend-card.tokyo {
+            border-top: 5px solid #3498db;
+        }
+
+        .high-school .trend-card.chiba {
+            border-top: 5px solid #2980b9;
+        }
+
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .data-note {
+            border: 2px solid;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .middle-school .data-note {
+            background: linear-gradient(135deg, #fef5e7, #fff8dc);
+            border-color: #f39c12;
+            color: #d68910;
+        }
+
+        .high-school .data-note {
+            background: linear-gradient(135deg, #e8f4f8, #f0f8ff);
+            border-color: #3498db;
+            color: #1f4e79;
         }
 
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
             .main-header h1 {
                 font-size: 2.2rem;
             }
-
-            .header h2 {
-                font-size: 1.8rem;
+            
+            .tab-container {
+                flex-direction: column;
+                align-items: center;
             }
-
-            .stats-container {
+            
+            .stats-grid {
                 grid-template-columns: 1fr;
-                gap: 20px;
             }
-
-            .trend-data {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-                gap: 15px;
+            
+            .gender-stats {
+                grid-template-columns: 1fr;
             }
-
-            .schools-grid {
-                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            
+            .trend-box {
+                grid-template-columns: 1fr;
+            }
+            
+            .ranking-item {
+                flex-direction: column;
+                align-items: flex-start;
                 gap: 10px;
-            }
-
-            .tab-button {
-                padding: 12px 20px;
-                font-size: 1rem;
-            }
-
-            .comparison-table th,
-            .comparison-table td {
-                padding: 10px 8px;
-                font-size: 0.85rem;
             }
         }
     </style>
@@ -411,369 +584,729 @@ EXAM_DATA_HTML = """<!DOCTYPE html>
     <div class="container">
         <div class="main-header">
             <h1>日本大学第一中学校・高等学校</h1>
-            <div class="subtitle">2025年度 受験生動向データ分析</div>
+            <div class="subtitle">2025年度入試 受験生動向データ</div>
         </div>
 
         <div class="tab-container">
             <button class="tab-button middle-school active" onclick="showTab('middle-school')">
-                中学校データ分析
+                🎓 中学入試データ（561名）
             </button>
             <button class="tab-button high-school" onclick="showTab('high-school')">
-                高校データ分析
+                🎯 高校入試データ（111名）
             </button>
         </div>
 
-        <!-- 中学校データ分析タブ -->
-        <div id="middle-school" class="tab-content active middle-school">
+        <!-- 中学入試データ -->
+        <div id="middle-school" class="tab-content middle-school active">
             <div class="header">
-                <h2>中学入試 受験生動向分析</h2>
-                <div class="description">
-                    2025年度中学入試における受験生の動向、偏差値推移、および近隣私立校との比較データを分析しています。
-                </div>
+                <h2>中学入試 受験生動向データ</h2>
+                <div class="subtitle">受験生・保護者の皆様へ</div>
+                <div class="total-students">総受験生数: 561名</div>
             </div>
 
-            <div class="stats-container">
-                <div class="stat-box">
-                    <h3>2025年度入試結果サマリー</h3>
-                    <div class="trend-data">
-                        <div class="trend-item">
-                            <div class="label">総出願者数</div>
-                            <div class="value">1,170</div>
-                            <div class="change increase">前年比 +128名</div>
-                        </div>
-                        <div class="trend-item">
-                            <div class="label">総合格者数</div>
-                            <div class="value">278</div>
-                            <div class="change increase">前年比 +24名</div>
-                        </div>
-                        <div class="trend-item">
-                            <div class="label">平均実質倍率</div>
-                            <div class="value">3.4倍</div>
-                            <div class="change increase">前年比 +0.3倍</div>
-                        </div>
+            <div class="section">
+                <h3>📍 地域別受験生分布</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number">443</div>
+                        <div class="label">東京都（79.0%）</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">75</div>
+                        <div class="label">千葉県（13.4%）</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">20</div>
+                        <div class="label">埼玉県（3.6%）</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">20</div>
+                        <div class="label">神奈川県（3.6%）</div>
+                    </div>
+                </div>
+                
+                <h4>東京都内で特に多い区（上位10区）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">江東区</div>
+                        <div class="count">80名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">江戸川区</div>
+                        <div class="count">44名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">墨田区</div>
+                        <div class="count">33名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">4</div>
+                        <div class="school-name">足立区</div>
+                        <div class="count">24名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">5</div>
+                        <div class="school-name">葛飾区</div>
+                        <div class="count">24名</div>
                     </div>
                 </div>
 
-                <div class="stat-box">
-                    <h3>受験方式別動向</h3>
-                    <table class="comparison-table">
-                        <thead>
-                            <tr>
-                                <th>受験方式</th>
-                                <th>出願者数</th>
-                                <th>実質倍率</th>
-                                <th>前年比</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="year-column">4科第1回</td>
-                                <td>246名</td>
-                                <td>1.8倍</td>
-                                <td class="change increase">+15名</td>
-                            </tr>
-                            <tr>
-                                <td class="year-column">4科第2回</td>
-                                <td>365名</td>
-                                <td>2.2倍</td>
-                                <td class="change increase">+42名</td>
-                            </tr>
-                            <tr>
-                                <td class="year-column">2科第1回</td>
-                                <td>275名</td>
-                                <td>3.5倍</td>
-                                <td class="change increase">+38名</td>
-                            </tr>
-                            <tr>
-                                <td class="year-column">2科第2回</td>
-                                <td>284名</td>
-                                <td>6.0倍</td>
-                                <td class="change increase">+33名</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <h4>千葉県内で特に多い市（上位5市）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">船橋市</div>
+                        <div class="count">27名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">千葉市（各区合計）</div>
+                        <div class="count">15名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">市川市</div>
+                        <div class="count">11名</div>
+                    </div>
                 </div>
             </div>
 
-            <div class="trend-section">
-                <h3>偏差値・難易度分析</h3>
+            <div class="section">
+                <h3>🚃 通学時間について</h3>
                 <div class="highlight-box">
-                    <h4>2025年度 予想偏差値レンジ</h4>
-                    <p>4科受験：42-45（四谷大塚基準）<br>
-                    2科受験：44-47（四谷大塚基準）<br>
-                    ※2科受験の方が若干高い偏差値が必要</p>
+                    <strong>91.6%の受験生が通学時間60分以内</strong><br>
+                    多くの方にとって無理のない通学範囲内にあることがわかります。
                 </div>
-
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>年度</th>
-                            <th>4科偏差値</th>
-                            <th>2科偏差値</th>
-                            <th>総出願者数</th>
-                            <th>実質倍率</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="year-column">2025年</td>
-                            <td>42-45</td>
-                            <td>44-47</td>
-                            <td>1,170名</td>
-                            <td>3.4倍</td>
-                        </tr>
-                        <tr>
-                            <td class="year-column">2024年</td>
-                            <td>41-44</td>
-                            <td>43-46</td>
-                            <td>1,042名</td>
-                            <td>3.1倍</td>
-                        </tr>
-                        <tr>
-                            <td class="year-column">2023年</td>
-                            <td>40-43</td>
-                            <td>42-45</td>
-                            <td>987名</td>
-                            <td>2.9倍</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="private-schools-section">
-                <h3>近隣私立中学校との偏差値比較</h3>
-                <div class="schools-grid">
-                    <div class="school-item">
-                        <div class="name">日本大学第一</div>
-                        <div class="deviation">42-47</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">日本大学第二</div>
-                        <div class="deviation">45-49</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">日本大学第三</div>
-                        <div class="deviation">46-50</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">桜美林</div>
-                        <div class="deviation">40-44</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">多摩大学聖ヶ丘</div>
-                        <div class="deviation">38-42</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">帝京大学</div>
-                        <div class="deviation">39-43</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">明星</div>
-                        <div class="deviation">41-45</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">八王子学園八王子</div>
-                        <div class="deviation">44-48</div>
+                
+                <div class="chart">
+                    <div class="bar-chart">
+                        <div class="bar-item">
+                            <div class="bar-label">20分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 7.7%"></div>
+                                <div class="bar-text">43名 (7.7%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">30分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 21.4%"></div>
+                                <div class="bar-text">120名 (21.4%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">40分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 22.3%"></div>
+                                <div class="bar-text">125名 (22.3%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">50分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 17.3%"></div>
+                                <div class="bar-text">97名 (17.3%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">60分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 23.9%"></div>
+                                <div class="bar-text">134名 (23.9%)</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="note-section">
-                <h4>📊 中学入試 分析ポイント</h4>
-                <p>• 2科受験は4科受験より偏差値が2-3ポイント高く、競争が激化</p>
-                <p>• 第2回入試（2月回）は第1回より実質倍率が大幅に上昇</p>
-                <p>• 付属小学校からの進学者は7名と少数で、外部受験生が主体</p>
-                <p>• 近隣私立校の中では中堅レベルの位置づけを維持</p>
+            <div class="section">
+                <h3>🏫 他校との併願状況</h3>
+                
+                <h4>一緒に受験されることの多い学校（上位10校）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">日本大学豊山中学校</div>
+                        <div class="count">50名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">日本大学第二中学校</div>
+                        <div class="count">30名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">東洋大学京北中学校</div>
+                        <div class="count">21名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">4</div>
+                        <div class="school-name">千葉日本大学第一中学校</div>
+                        <div class="count">20名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">5</div>
+                        <div class="school-name">安田学園中学校</div>
+                        <div class="count">19名</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <strong>日本大学系列校との併願について</strong><br>
+                    127名（22.6%）の受験生が日本大学系列校を併願<br>
+                    日本大学への進学を見据えて、複数の日大系列校を受験される方が多いことがわかります。
+                </div>
+
+                <h4>👦 男子受験生の併願傾向（主要5校）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">日本大学豊山中学校（男子校）</div>
+                        <div class="count">50名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">日本大学第二中学校</div>
+                        <div class="count">20名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">千葉日本大学第一中学校</div>
+                        <div class="count">14名</div>
+                    </div>
+                </div>
+
+                <h4>👧 女子受験生の併願傾向（主要5校）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">日本大学第二中学校</div>
+                        <div class="count">10名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">東洋大学京北中学校</div>
+                        <div class="count">8名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">淑徳巣鴨中学校</div>
+                        <div class="count">8名</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>👦👧 男女別の特徴</h3>
+                <div class="gender-stats">
+                    <div class="gender-card male">
+                        <h4>男子受験生</h4>
+                        <div class="number">349名</div>
+                        <div class="label">62.2%</div>
+                    </div>
+                    <div class="gender-card female">
+                        <h4>女子受験生</h4>
+                        <div class="number">212名</div>
+                        <div class="label">37.8%</div>
+                    </div>
+                </div>
+
+                <h4>受験パターンについて</h4>
+                <div class="chart">
+                    <div class="bar-chart">
+                        <div class="bar-item">
+                            <div class="bar-label">1回のみ</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 39.6%"></div>
+                                <div class="bar-text">222名 (39.6%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">2回</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 29.9%"></div>
+                                <div class="bar-text">168名 (29.9%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">3回</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 12.8%"></div>
+                                <div class="bar-text">72名 (12.8%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">4回</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 17.6%"></div>
+                                <div class="bar-text">99名 (17.6%)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>✨ データから見える本校の特徴</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number">91.6%</div>
+                        <div class="label">通学時間60分以内<br>アクセスの良さ</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">22.6%</div>
+                        <div class="label">日大系列校併願<br>ブランドの安心感</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">28%</div>
+                        <div class="label">近隣3区からの受験<br>地域に根ざした信頼</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">6:4</div>
+                        <div class="label">男女バランス<br>共学校としての魅力</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="data-note">
+                このデータは2025年度入試受験生561名の実際のデータに基づいています（2025年実施）
             </div>
         </div>
 
-        <!-- 高校データ分析タブ -->
+        <!-- 高校入試データ -->
         <div id="high-school" class="tab-content high-school">
             <div class="header">
-                <h2>高校入試 受験生動向分析</h2>
-                <div class="description">
-                    2025年度高校入試における受験生の動向、偏差値推移、および都内私立校との比較データを分析しています。
-                </div>
+                <h2>高校入試 受験生実態調査</h2>
+                <div class="subtitle">一般入試(B)【他校第一志望】</div>
+                <div class="total-students">総受験生数: 111名</div>
+                <div class="exam-type">公立高校との併願パターン</div>
             </div>
 
-            <div class="stats-container">
-                <div class="stat-box">
-                    <h3>2025年度入試結果サマリー</h3>
-                    <div class="trend-data">
-                        <div class="trend-item">
-                            <div class="label">総出願者数</div>
-                            <div class="value">287</div>
-                            <div class="change decrease">前年比 -23名</div>
-                        </div>
-                        <div class="trend-item">
-                            <div class="label">推薦合格者数</div>
-                            <div class="value">88</div>
-                            <div class="change increase">前年比 +5名</div>
-                        </div>
-                        <div class="trend-item">
-                            <div class="label">一般実質倍率</div>
-                            <div class="value">1.3倍</div>
-                            <div class="change decrease">前年比 -0.1倍</div>
-                        </div>
+            <div class="section">
+                <h3>📍 受験生の居住地域分析</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number">62</div>
+                        <div class="label">東京都（55.9%）</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">46</div>
+                        <div class="label">千葉県（41.4%）</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">3</div>
+                        <div class="label">その他（2.7%）</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">97.3%</div>
+                        <div class="label">首都圏集中率</div>
+                    </div>
+                </div>
+                
+                <h4>東京都内（上位5エリア）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">江戸川区</div>
+                        <div class="count">17名（27.4%）</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">江東区</div>
+                        <div class="count">17名（27.4%）</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">墨田区</div>
+                        <div class="count">5名（8.1%）</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">4</div>
+                        <div class="school-name">中央区</div>
+                        <div class="count">5名（8.1%）</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">5</div>
+                        <div class="school-name">足立区・新宿区・台東区</div>
+                        <div class="count">各3名（4.8%）</div>
                     </div>
                 </div>
 
-                <div class="stat-box">
-                    <h3>入試方式別動向</h3>
-                    <table class="comparison-table">
-                        <thead>
-                            <tr>
-                                <th>入試方式</th>
-                                <th>出願者数</th>
-                                <th>実質倍率</th>
-                                <th>前年比</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td class="year-column">推薦入試</td>
-                                <td>88名</td>
-                                <td>1.0倍</td>
-                                <td class="change increase">+5名</td>
-                            </tr>
-                            <tr>
-                                <td class="year-column">一般入試</td>
-                                <td>199名</td>
-                                <td>1.3倍</td>
-                                <td class="change decrease">-28名</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <h4>千葉県内（上位5エリア）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">船橋市</div>
+                        <div class="count">15名（32.6%）</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">市川市</div>
+                        <div class="count">9名（19.6%）</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">千葉市美浜区</div>
+                        <div class="count">5名（10.9%）</div>
+                    </div>
                 </div>
-            </div>
 
-            <div class="trend-section">
-                <h3>偏差値・難易度分析</h3>
                 <div class="highlight-box">
-                    <h4>2025年度 予想偏差値レンジ</h4>
-                    <p>推薦入試：内申基準 3.8以上（9科）<br>
-                    一般入試：55-58（Vもぎ基準）<br>
-                    ※A受験・B受験の2方式で実施</p>
+                    <strong>地域特性の分析</strong><br>
+                    <strong>東京都：</strong>江戸川区・江東区に集中（学校立地の墨田区に隣接）<br>
+                    <strong>千葉県：</strong>総武線・京葉線沿線からの受験が多い傾向<br>
+                    <strong>通学圏：</strong>学校周辺30km圏内からの受験が大部分を占める
                 </div>
-
-                <table class="comparison-table">
-                    <thead>
-                        <tr>
-                            <th>年度</th>
-                            <th>一般偏差値</th>
-                            <th>推薦内申基準</th>
-                            <th>総出願者数</th>
-                            <th>実質倍率</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td class="year-column">2025年</td>
-                            <td>55-58</td>
-                            <td>3.8/5.0</td>
-                            <td>287名</td>
-                            <td>1.3倍</td>
-                        </tr>
-                        <tr>
-                            <td class="year-column">2024年</td>
-                            <td>56-59</td>
-                            <td>3.9/5.0</td>
-                            <td>310名</td>
-                            <td>1.4倍</td>
-                        </tr>
-                        <tr>
-                            <td class="year-column">2023年</td>
-                            <td>57-60</td>
-                            <td>4.0/5.0</td>
-                            <td>295名</td>
-                            <td>1.5倍</td>
-                        </tr>
-                    </tbody>
-                </table>
             </div>
 
-            <div class="private-schools-section">
-                <h3>都内私立高校との偏差値比較</h3>
-                <div class="schools-grid">
-                    <div class="school-item">
-                        <div class="name">日本大学第一</div>
-                        <div class="deviation">55-58</div>
+            <div class="section">
+                <h3>🚃 通学時間と地域の関係性</h3>
+                <div class="highlight-box">
+                    <strong>87.4%の受験生が通学時間60分以内を希望</strong><br>
+                    高校生にとって適切な通学時間内での学校選択が行われています。
+                </div>
+                
+                <div class="chart">
+                    <div class="bar-chart">
+                        <div class="bar-item">
+                            <div class="bar-label">30分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 18.9%"></div>
+                                <div class="bar-text">21名 (18.9%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">40分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 21.6%"></div>
+                                <div class="bar-text">24名 (21.6%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">50分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 18.0%"></div>
+                                <div class="bar-text">20名 (18.0%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">60分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 22.5%"></div>
+                                <div class="bar-text">25名 (22.5%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">70分以内</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 8.1%"></div>
+                                <div class="bar-text">9名 (8.1%)</div>
+                            </div>
+                        </div>
+                        <div class="bar-item">
+                            <div class="bar-label">80分以上</div>
+                            <div class="bar">
+                                <div class="bar-fill" style="width: 10.9%"></div>
+                                <div class="bar-text">12名 (10.9%)</div>
+                            </div>
+                        </div>
                     </div>
-                    <div class="school-item">
-                        <div class="name">日本大学第二</div>
-                        <div class="deviation">58-61</div>
+                </div>
+
+                <h4>地域別通学時間の特徴</h4>
+                <div class="trend-box">
+                    <div class="trend-card tokyo">
+                        <h4>東京都受験者</h4>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="number">30.6%</div>
+                                <div class="label">30分以内</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">29.0%</div>
+                                <div class="label">40分以内</div>
+                            </div>
+                        </div>
+                        <p><strong>短時間通学が可能：</strong>約6割が40分以内で通学可能</p>
                     </div>
-                    <div class="school-item">
-                        <div class="name">日本大学第三</div>
-                        <div class="deviation">59-62</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">日本大学豊山</div>
-                        <div class="deviation">56-59</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">桜美林</div>
-                        <div class="deviation">52-55</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">多摩大学聖ヶ丘</div>
-                        <div class="deviation">48-52</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">帝京大学</div>
-                        <div class="deviation">50-54</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">明星</div>
-                        <div class="deviation">53-57</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">八王子学園八王子</div>
-                        <div class="deviation">54-58</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">拓殖大学第一</div>
-                        <div class="deviation">57-60</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">東京農業大学第一</div>
-                        <div class="deviation">62-65</div>
-                    </div>
-                    <div class="school-item">
-                        <div class="name">成城学園</div>
-                        <div class="deviation">60-63</div>
+                    <div class="trend-card chiba">
+                        <h4>千葉県受験者</h4>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="number">37.0%</div>
+                                <div class="label">60分以内が最多</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="number">19.6%</div>
+                                <div class="label">70分以内</div>
+                            </div>
+                        </div>
+                        <p><strong>中距離通学が中心：</strong>通学時間をかけても本校を選択</p>
                     </div>
                 </div>
             </div>
 
-            <div class="note-section">
-                <h4>📊 高校入試 分析ポイント</h4>
-                <p>• 推薦入試は実質全員合格で、内申基準をクリアすれば合格可能性が高い</p>
-                <p>• 一般入試は実質倍率1.3倍と比較的合格しやすい水準を維持</p>
-                <p>• B受験はA受験より合格最低点が約10点高く、難易度差がある</p>
-                <p>• 日本大学系列校の中では中堅校の位置づけ</p>
-                <p>• 近年偏差値が若干下降傾向で、受験しやすくなっている</p>
+            <div class="section">
+                <h3>🏫 併願校（第一志望校）分析</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number">91</div>
+                        <div class="label">公立高校志望（82.0%）</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">20</div>
+                        <div class="label">私立・その他志望（18.0%）</div>
+                    </div>
+                </div>
+
+                <h4>主要併願校ランキング（全体上位8校）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">東京都立江戸川高等学校</div>
+                        <div class="count">11名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">東京都立深川高等学校</div>
+                        <div class="count">10名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">千葉県立幕張総合高等学校</div>
+                        <div class="count">6名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">4</div>
+                        <div class="school-name">千葉県立国府台高等学校</div>
+                        <div class="count">6名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">5</div>
+                        <div class="school-name">國學院高等学校</div>
+                        <div class="count">5名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">6</div>
+                        <div class="school-name">東京都立晴海総合高等学校</div>
+                        <div class="count">5名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">7</div>
+                        <div class="school-name">千葉県立国分高等学校</div>
+                        <div class="count">4名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">8</div>
+                        <div class="school-name">東京都立墨田川高等学校</div>
+                        <div class="count">4名</div>
+                    </div>
+                </div>
+
+                <h4>私立・その他志望者の詳細（20名・18.0%）</h4>
+                <div class="ranking-list">
+                    <div class="ranking-item">
+                        <div class="rank top-3">1</div>
+                        <div class="school-name">國學院高等学校</div>
+                        <div class="count">5名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">2</div>
+                        <div class="school-name">千葉日本大学第一高等学校</div>
+                        <div class="count">2名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank top-3">3</div>
+                        <div class="school-name">日本大学豊山高等学校</div>
+                        <div class="count">2名</div>
+                    </div>
+                    <div class="ranking-item">
+                        <div class="rank">4</div>
+                        <div class="school-name">その他私立高校・高専</div>
+                        <div class="count">11名</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <strong>私立併願校の特徴</strong><br>
+                    <strong>日本大学附属校系：</strong>6名（30%）が日大系列校を第一志望<br>
+                    <strong>大学附属校：</strong>専修大学松戸、國學院なども含む<br>
+                    <strong>学校タイプ：</strong>共学・別学校、進学校、高等専門学校と多様
+                </div>
             </div>
+
+            <div class="section">
+                <h3>💭 志望理由の詳細分析</h3>
+                <div class="keyword-grid">
+                    <div class="keyword-card">
+                        <div class="keyword">日本大学</div>
+                        <div class="stats">23件（20.7%）</div>
+                    </div>
+                    <div class="keyword-card">
+                        <div class="keyword">先生</div>
+                        <div class="stats">19件（17.1%）</div>
+                    </div>
+                    <div class="keyword-card">
+                        <div class="keyword">雰囲気</div>
+                        <div class="stats">15件（13.5%）</div>
+                    </div>
+                    <div class="keyword-card">
+                        <div class="keyword">日大</div>
+                        <div class="stats">14件（12.6%）</div>
+                    </div>
+                    <div class="keyword-card">
+                        <div class="keyword">塾</div>
+                        <div class="stats">12件（10.8%）</div>
+                    </div>
+                    <div class="keyword-card">
+                        <div class="keyword">親</div>
+                        <div class="stats">12件（10.8%）</div>
+                    </div>
+                    <div class="keyword-card">
+                        <div class="keyword">通学</div>
+                        <div class="stats">9件（8.1%）</div>
+                    </div>
+                    <div class="keyword-card">
+                        <div class="keyword">説明会</div>
+                        <div class="stats">9件（8.1%）</div>
+                    </div>
+                </div>
+
+                <h4>地域別の志望理由傾向</h4>
+                <div class="trend-box">
+                    <div class="trend-card tokyo">
+                        <h4>東京都受験者</h4>
+                        <p><strong>日本大学進学への言及：16.1%</strong></p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>教育環境や学校の雰囲気を重視</li>
+                            <li>通学利便性を活かした学校選択</li>
+                            <li>教師との距離の近さを評価</li>
+                        </ul>
+                    </div>
+                    <div class="trend-card chiba">
+                        <h4>千葉県受験者</h4>
+                        <p><strong>日本大学進学への言及：28.3%</strong></p>
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>日本大学進学への期待がより強い</li>
+                            <li>通学時間をかけても通学したい動機</li>
+                            <li>内部進学制度への関心</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <h4>主要な志望動機（複数回答）</h4>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number">30%</div>
+                        <div class="label">大学進学重視</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">25%</div>
+                        <div class="label">教育環境評価</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">20%</div>
+                        <div class="label">立地・通学条件</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">15%</div>
+                        <div class="label">外部からの推薦</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">10%</div>
+                        <div class="label">学校見学・説明会</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h3>✨ データ分析のまとめ</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="number">87.4%</div>
+                        <div class="label">通学時間60分以内<br>適切な通学範囲</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">82.0%</div>
+                        <div class="label">公立高校が第一志望<br>安全志向の併願戦略</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">20.7%</div>
+                        <div class="label">日本大学進学重視<br>明確な進路目標</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="number">97.3%</div>
+                        <div class="label">首都圏集中<br>地域に根ざした選択</div>
+                    </div>
+                </div>
+
+                <div class="highlight-box">
+                    <strong>本校が適している可能性の高い受験生</strong><br>
+                    ✅ 東京都・千葉県在住で通学時間1時間程度を許容できる方<br>
+                    ✅ 日本大学進学に関心をお持ちの方<br>
+                    ✅ 教師との距離が近い教育環境を求める方<br>
+                    ✅ 学校の雰囲気を重視される方<br>
+                    ✅ 公立高校との併願をお考えの方
+                </div>
+            </div>
+
+            <div class="data-note">
+                このデータは2025年度一般入試受験生111名の実際のデータに基づいています（2025年実施）
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><strong>受験をご検討の皆様へ</strong></p>
+            <p style="margin: 15px 0;">
+                学校見学や説明会を通じて、実際の教育環境をご確認いただくことをお勧めいたします。<br>
+                ご質問等がございましたら、お気軽に本校までお問い合わせください。
+            </p>
+            <p style="color: #7f8c8d;">
+                日本大学第一中学校・高等学校 - 受験生・保護者の皆様へ
+            </p>
         </div>
     </div>
 
     <script>
         function showTab(tabName) {
             // すべてのタブコンテンツを非表示
-            const allTabs = document.querySelectorAll('.tab-content');
-            allTabs.forEach(tab => tab.classList.remove('active'));
-            
-            // すべてのタブボタンからactiveクラスを削除
-            const allButtons = document.querySelectorAll('.tab-button');
-            allButtons.forEach(button => button.classList.remove('active'));
-            
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // すべてのタブボタンを非アクティブ
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => {
+                button.classList.remove('active');
+            });
+
             // 選択されたタブを表示
             document.getElementById(tabName).classList.add('active');
             
-            // 選択されたボタンにactiveクラスを追加
-            const selectedButton = document.querySelector(`.tab-button.${tabName.replace('-', '-')}`);
-            selectedButton.classList.add('active');
+            // 対応するボタンをアクティブ
+            const activeButton = document.querySelector(`.tab-button.${tabName.replace('-', '-')}`);
+            if (activeButton) {
+                activeButton.classList.add('active');
+            }
         }
+
+        // アニメーション効果の追加
+        window.addEventListener('load', function() {
+            const barFills = document.querySelectorAll('.bar-fill');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.transition = 'width 1s ease-in-out';
+                    }
+                });
+            });
+
+            barFills.forEach(bar => observer.observe(bar));
+        });
     </script>
 </body>
 </html>"""
