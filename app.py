@@ -1062,8 +1062,11 @@ def render_info_sidebar():
     </a>
     """, unsafe_allow_html=True)
     # カレンダー表示
-    if st.button("📅 学校行事・年間予定を表示", key="calendar_button"):
-        display_calendar_events()
+    if st.button("📅 学校行事・年間予定を見る", key="calendar_button"):
+        st.switch_page("calendar_page.py")
+    
+    # API有効化までの代替リンク
+    st.markdown("📅 [学校行事・年間予定（外部リンク）](https://calendar.google.com/calendar/embed?src=nichidai1.haishin%40gmail.com&ctz=Asia%2FTokyo)", unsafe_allow_html=True)
     
     st.markdown("#### 📖 進路について")
     st.markdown("- [日本大学進学実績](placeholder)")
