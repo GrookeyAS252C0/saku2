@@ -1132,8 +1132,8 @@ EXAM_DATA_HTML = """<!DOCTYPE html>
 
                 <div class="highlight-box">
                     <strong>私立併願校の特徴</strong><br>
-                    <strong>日本大学附属校系：</strong>6名（30%）が日大系列校を第一志望<br>
-                    <strong>大学附属校：</strong>専修大学松戸、國學院なども含む<br>
+                    <strong>日本大学付属校系：</strong>6名（30%）が日大系列校を第一志望<br>
+                    <strong>大学付属校：</strong>専修大学松戸、國學院なども含む<br>
                     <strong>学校タイプ：</strong>共学・別学校、進学校、高等専門学校と多様
                 </div>
             </div>
