@@ -1342,7 +1342,7 @@ def render_info_sidebar():
     if st.button("📊 入試概要・合格最低点", use_container_width=True):
         st.session_state.show_exam_results = True
         st.rerun()
-    if st.button("📈 受験生動向データ", use_container_width=True):
+    if st.button("📈 受験生動向データ・偏差値", use_container_width=True):
         st.session_state.show_exam_data = True
         st.rerun()
     
@@ -1430,7 +1430,7 @@ def show_exam_data_page():
     # ヘッダー
     col1, col2 = st.columns([3, 1])
     with col1:
-        st.title("📈 2025年度 受験生動向データ")
+        st.title("📈 2025年度 受験生動向データ・偏差値")
     with col2:
         if st.button("⬅ アンケートに戻る", use_container_width=True):
             st.session_state.show_exam_data = False
