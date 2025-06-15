@@ -9,6 +9,7 @@ import gspread
 from google.oauth2.service_account import Credentials
 from googleapiclient.discovery import build
 import time
+import calendar as cal
 
 # 日本時間（JST）の設定
 JST = timezone(timedelta(hours=+9))
@@ -64,19 +65,26 @@ def get_calendar_events():
                 # JSTに変換
                 start_jst = start_dt.astimezone(JST)
                 end_jst = end_dt.astimezone(JST)
-                date_str = start_jst.strftime('%Y年%m月%d日')
+                date_str = start_jst.strftime('%Y-%m-%d')
                 time_str = f"{start_jst.strftime('%H:%M')} - {end_jst.strftime('%H:%M')}"
+                day_num = start_jst.day
+                month_year = start_jst.strftime('%Y年%m月')
             else:  # 終日イベント
                 start_dt = datetime.fromisoformat(start + 'T00:00:00')
-                date_str = start_dt.strftime('%Y年%m月%d日')
+                date_str = start_dt.strftime('%Y-%m-%d')
                 time_str = "終日"
+                day_num = start_dt.day
+                month_year = start_dt.strftime('%Y年%m月')
             
             event_data.append({
                 'title': event.get('summary', '無題'),
                 'date': date_str,
                 'time': time_str,
                 'description': event.get('description', ''),
-                'start_datetime': start_dt
+                'start_datetime': start_dt,
+                'day': day_num,
+                'month_year': month_year,
+                'location': event.get('location', '')
             })
         
         return pd.DataFrame(event_data)
@@ -135,6 +143,137 @@ def display_calendar_events():
                         st.markdown(f"📅 {event['date']}")
                         st.markdown(f"⏰ {event['time']}")
                     st.divider()
+
+def create_calendar_grid(events_df, year, month):
+    """月間カレンダーグリッドを作成"""
+    # 月の情報を取得
+    month_calendar = cal.monthcalendar(year, month)
+    month_name = f"{year}年{month:02d}月"
+    
+    # その月のイベントを取得
+    month_events = events_df[events_df['month_year'] == month_name]
+    
+    # 日付ごとのイベントを辞書化
+    events_by_day = {}
+    for _, event in month_events.iterrows():
+        day = event['day']
+        if day not in events_by_day:
+            events_by_day[day] = []
+        events_by_day[day].append(event)
+    
+    st.markdown(f"## 📅 {month_name}")
+    
+    # 曜日ヘッダー
+    weekdays = ['月', '火', '水', '木', '金', '土', '日']
+    cols = st.columns(7)
+    for i, weekday in enumerate(weekdays):
+        with cols[i]:
+            st.markdown(f"**{weekday}**")
+    
+    # カレンダーグリッドを作成
+    for week in month_calendar:
+        cols = st.columns(7)
+        for i, day in enumerate(week):
+            with cols[i]:
+                if day == 0:
+                    st.markdown("")  # 空の日
+                else:
+                    # 日付表示
+                    day_events = events_by_day.get(day, [])
+                    
+                    if day_events:
+                        # イベントがある日は強調表示
+                        st.markdown(f"**{day}**")
+                        for event in day_events[:2]:  # 最大2つまで表示
+                            event_title = event['title']
+                            if len(event_title) > 8:
+                                event_title = event_title[:8] + "..."
+                            st.markdown(f"<small>🎯 {event_title}</small>", unsafe_allow_html=True)
+                        if len(day_events) > 2:
+                            st.markdown(f"<small>他{len(day_events)-2}件</small>", unsafe_allow_html=True)
+                    else:
+                        st.markdown(f"{day}")
+
+def display_monthly_events(events_df, year, month):
+    """月間イベント詳細リストを表示"""
+    month_name = f"{year}年{month:02d}月"
+    month_events = events_df[events_df['month_year'] == month_name].sort_values('start_datetime')
+    
+    if not month_events.empty:
+        st.markdown(f"### 📋 {month_name}の予定詳細")
+        
+        for _, event in month_events.iterrows():
+            with st.expander(f"📅 {event['day']}日: {event['title']}"):
+                col1, col2 = st.columns([2, 1])
+                with col1:
+                    st.markdown(f"**イベント名:** {event['title']}")
+                    if event['description']:
+                        st.markdown(f"**詳細:** {event['description']}")
+                    if event['location']:
+                        st.markdown(f"**場所:** {event['location']}")
+                with col2:
+                    st.markdown(f"**日付:** {event['date']}")
+                    st.markdown(f"**時間:** {event['time']}")
+    else:
+        st.info(f"{month_name}には予定されているイベントがありません。")
+
+def show_calendar_page():
+    """カレンダーページを表示"""
+    st.title("📅 日本大学第一中学・高等学校 年間予定")
+    
+    # 戻るボタン
+    if st.button("🏠 メインページに戻る"):
+        st.session_state.show_calendar = False
+        st.rerun()
+    
+    # データ取得
+    events_df = get_calendar_events()
+    
+    if events_df.empty:
+        st.error("カレンダーデータを取得できませんでした。")
+        return
+    
+    # サイドバーで月選択
+    with st.sidebar:
+        st.markdown("## 📅 月選択")
+        
+        current_date = get_jst_now()
+        
+        # 年選択
+        available_years = sorted(events_df['start_datetime'].dt.year.unique())
+        if not available_years:
+            available_years = [current_date.year]
+        
+        selected_year = st.selectbox(
+            "年を選択",
+            options=available_years,
+            index=available_years.index(current_date.year) if current_date.year in available_years else 0
+        )
+        
+        # 月選択
+        selected_month = st.selectbox(
+            "月を選択",
+            options=list(range(1, 13)),
+            index=current_date.month - 1,
+            format_func=lambda x: f"{x}月"
+        )
+        
+        # 表示モード選択
+        display_mode = st.radio(
+            "表示モード",
+            ["カレンダー表示", "リスト表示", "両方表示"],
+            index=2
+        )
+    
+    # メインコンテンツ
+    if display_mode in ["カレンダー表示", "両方表示"]:
+        create_calendar_grid(events_df, selected_year, selected_month)
+        
+        if display_mode == "両方表示":
+            st.divider()
+    
+    if display_mode in ["リスト表示", "両方表示"]:
+        display_monthly_events(events_df, selected_year, selected_month)
 
 # ページ設定
 st.set_page_config(
@@ -648,6 +787,11 @@ def main():
         show_exam_data_page()
         return
     
+    # カレンダーページの確認
+    if 'show_calendar' in st.session_state and st.session_state.show_calendar:
+        show_calendar_page()
+        return
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -1063,7 +1207,8 @@ def render_info_sidebar():
     """, unsafe_allow_html=True)
     # カレンダー表示
     if st.button("📅 学校行事・年間予定を見る", key="calendar_button"):
-        st.switch_page("calendar_page.py")
+        st.session_state.show_calendar = True
+        st.rerun()
     
     # API有効化までの代替リンク
     st.markdown("📅 [学校行事・年間予定（外部リンク）](https://calendar.google.com/calendar/embed?src=nichidai1.haishin%40gmail.com&ctz=Asia%2FTokyo)", unsafe_allow_html=True)
