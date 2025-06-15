@@ -743,7 +743,7 @@ def render_info_sidebar():
     if st.button("📄 昨年度の入試要項", use_container_width=True):
         st.session_state.show_admission_guide = True
         st.rerun()
-    if st.button("📊 合格最低点", use_container_width=True):
+    if st.button("📊 入試概要・合格最低点", use_container_width=True):
         st.session_state.show_exam_results = True
         st.rerun()
     st.markdown("- [偏差値](placeholder)")
