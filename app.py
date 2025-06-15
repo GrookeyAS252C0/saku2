@@ -54,6 +54,17 @@ if 'all_submissions' not in st.session_state:
 
 def create_new_survey():
     """新しいアンケートを作成"""
+    # 現在編集中の空のアンケートがある場合は、新規作成せずにそれを使用
+    if st.session_state.current_index >= 0:
+        current_survey = st.session_state.survey_history[st.session_state.current_index]
+        survey_dict = asdict(current_survey)
+        is_valid, _ = is_survey_data_valid(survey_dict)
+        
+        # 現在のアンケートが未送信で空の場合は、新規作成しない
+        if not current_survey.submitted and not is_valid:
+            st.session_state.editing_mode = True
+            return
+    
     venue_name = get_venue_info()  # URLパラメータから会場を取得
     
     # ユーザーセッションIDがない場合は生成
@@ -541,9 +552,23 @@ def main():
         
         with col3:
             if st.session_state.survey_history:
-                current = st.session_state.current_index + 1
-                total = len(st.session_state.survey_history)
-                st.info(f"📝 アンケート {current}/{total}")
+                # 有効なアンケートのみをカウント
+                valid_surveys = 0
+                current_valid_index = 0
+                
+                for i, survey in enumerate(st.session_state.survey_history):
+                    survey_dict = asdict(survey)
+                    is_valid, _ = is_survey_data_valid(survey_dict)
+                    
+                    if survey.submitted or is_valid:
+                        valid_surveys += 1
+                        if i <= st.session_state.current_index:
+                            current_valid_index = valid_surveys
+                
+                if valid_surveys > 0:
+                    st.info(f"📝 アンケート {current_valid_index}/{valid_surveys}")
+                else:
+                    st.info("📝 新規アンケート")
             else:
                 st.info("📝 新規アンケート")
         
