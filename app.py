@@ -313,16 +313,46 @@ def save_to_cloud_storage(data: Dict[str, Any]):
     st.session_state.export_data = df
     return True
 
+def get_valid_survey_indices():
+    """有効なアンケートのインデックスリストを取得"""
+    valid_indices = []
+    for i, survey in enumerate(st.session_state.survey_history):
+        survey_dict = asdict(survey)
+        is_valid, _ = is_survey_data_valid(survey_dict)
+        if survey.submitted or is_valid:
+            valid_indices.append(i)
+    return valid_indices
+
 def navigate_previous():
-    """前のアンケートに戻る"""
-    if st.session_state.current_index > 0:
-        st.session_state.current_index -= 1
+    """前の有効なアンケートに戻る"""
+    valid_indices = get_valid_survey_indices()
+    if not valid_indices:
+        return
+    
+    current_pos = None
+    for i, idx in enumerate(valid_indices):
+        if idx == st.session_state.current_index:
+            current_pos = i
+            break
+    
+    if current_pos is not None and current_pos > 0:
+        st.session_state.current_index = valid_indices[current_pos - 1]
         st.session_state.editing_mode = True
 
 def navigate_next():
-    """次のアンケートに進む"""
-    if st.session_state.current_index < len(st.session_state.survey_history) - 1:
-        st.session_state.current_index += 1
+    """次の有効なアンケートに進む"""
+    valid_indices = get_valid_survey_indices()
+    if not valid_indices:
+        return
+    
+    current_pos = None
+    for i, idx in enumerate(valid_indices):
+        if idx == st.session_state.current_index:
+            current_pos = i
+            break
+    
+    if current_pos is not None and current_pos < len(valid_indices) - 1:
+        st.session_state.current_index = valid_indices[current_pos + 1]
         st.session_state.editing_mode = True
 
 def load_user_data_from_sheets():
@@ -543,11 +573,25 @@ def main():
         col1, col2, col3, col4, col5 = st.columns([1, 1, 2, 1, 1])
     
         with col1:
-            if st.button("◀ 前へ", disabled=st.session_state.current_index <= 0, use_container_width=True):
+            # 有効なアンケートの中での前のナビゲーション判定
+            valid_indices = get_valid_survey_indices()
+            current_pos_in_valid = None
+            
+            for i, idx in enumerate(valid_indices):
+                if idx == st.session_state.current_index:
+                    current_pos_in_valid = i
+                    break
+            
+            prev_disabled = (current_pos_in_valid is None or current_pos_in_valid <= 0)
+            
+            if st.button("◀ 前へ", disabled=prev_disabled, use_container_width=True):
                 navigate_previous()
         
         with col2:
-            if st.button("次へ ▶", disabled=st.session_state.current_index >= len(st.session_state.survey_history) - 1, use_container_width=True):
+            # 有効なアンケートの中での次のナビゲーション判定
+            next_disabled = (current_pos_in_valid is None or current_pos_in_valid >= len(valid_indices) - 1)
+            
+            if st.button("次へ ▶", disabled=next_disabled, use_container_width=True):
                 navigate_next()
         
         with col3:
