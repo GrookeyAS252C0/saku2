@@ -7,6 +7,7 @@ from dataclasses import dataclass, asdict
 from typing import List, Dict, Any
 import gspread
 from google.oauth2.service_account import Credentials
+from googleapiclient.discovery import build
 import time
 
 # 日本時間（JST）の設定
@@ -15,6 +16,125 @@ JST = timezone(timedelta(hours=+9))
 def get_jst_now():
     """現在の日本時間を取得"""
     return datetime.now(JST)
+
+@st.cache_data(ttl=3600)  # 1時間キャッシュ
+def get_calendar_events():
+    """Google Calendarからイベントを取得"""
+    try:
+        # 認証情報の設定（既存のGoogle Sheets認証を流用）
+        credentials = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=[
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/calendar.readonly"
+            ]
+        )
+        
+        # Calendar APIサービスの構築
+        service = build('calendar', 'v3', credentials=credentials)
+        
+        # カレンダーID
+        calendar_id = 'nichidai1.haishin@gmail.com'
+        
+        # 現在から1年先までのイベントを取得
+        now = datetime.now(JST).isoformat()
+        one_year_later = (datetime.now(JST) + timedelta(days=365)).isoformat()
+        
+        events_result = service.events().list(
+            calendarId=calendar_id,
+            timeMin=now,
+            timeMax=one_year_later,
+            maxResults=50,
+            singleEvents=True,
+            orderBy='startTime'
+        ).execute()
+        
+        events = events_result.get('items', [])
+        
+        # イベントデータをDataFrameに変換
+        event_data = []
+        for event in events:
+            start = event['start'].get('dateTime', event['start'].get('date'))
+            end = event['end'].get('dateTime', event['end'].get('date'))
+            
+            # 日付の解析と表示用フォーマット
+            if 'T' in start:  # 時刻あり
+                start_dt = datetime.fromisoformat(start.replace('Z', '+00:00'))
+                end_dt = datetime.fromisoformat(end.replace('Z', '+00:00'))
+                # JSTに変換
+                start_jst = start_dt.astimezone(JST)
+                end_jst = end_dt.astimezone(JST)
+                date_str = start_jst.strftime('%Y年%m月%d日')
+                time_str = f"{start_jst.strftime('%H:%M')} - {end_jst.strftime('%H:%M')}"
+            else:  # 終日イベント
+                start_dt = datetime.fromisoformat(start + 'T00:00:00')
+                date_str = start_dt.strftime('%Y年%m月%d日')
+                time_str = "終日"
+            
+            event_data.append({
+                'title': event.get('summary', '無題'),
+                'date': date_str,
+                'time': time_str,
+                'description': event.get('description', ''),
+                'start_datetime': start_dt
+            })
+        
+        return pd.DataFrame(event_data)
+    
+    except Exception as e:
+        st.error(f"カレンダーの読み込みに失敗しました: {str(e)}")
+        return pd.DataFrame()
+
+def display_calendar_events():
+    """カレンダーイベントを美しく表示"""
+    events_df = get_calendar_events()
+    
+    if events_df.empty:
+        st.info("📅 現在表示できるイベントがありません")
+        return
+    
+    st.markdown("### 📅 学校行事・年間予定")
+    
+    # 今月のイベント
+    current_month = datetime.now(JST).strftime('%Y年%m月')
+    current_events = events_df[events_df['date'].str.contains(current_month)]
+    
+    if not current_events.empty:
+        st.markdown(f"#### 🗓️ {current_month}の予定")
+        for _, event in current_events.iterrows():
+            with st.container():
+                col1, col2 = st.columns([3, 1])
+                with col1:
+                    st.markdown(f"**{event['title']}**")
+                    if event['description']:
+                        st.markdown(f"_{event['description']}_")
+                with col2:
+                    st.markdown(f"📅 {event['date']}")
+                    st.markdown(f"⏰ {event['time']}")
+                st.divider()
+    
+    # 今後のイベント（来月以降）
+    next_month_events = events_df[~events_df['date'].str.contains(current_month)]
+    
+    if not next_month_events.empty:
+        st.markdown("#### 📆 今後の予定")
+        
+        # 月ごとにグループ化
+        for month in next_month_events['date'].str[:7].unique()[:3]:  # 最大3ヶ月分
+            month_events = next_month_events[next_month_events['date'].str.startswith(month)]
+            month_name = datetime.strptime(month + '-01', '%Y年%m-01').strftime('%Y年%m月')
+            
+            with st.expander(f"📅 {month_name} ({len(month_events)}件)"):
+                for _, event in month_events.iterrows():
+                    col1, col2 = st.columns([3, 1])
+                    with col1:
+                        st.markdown(f"**{event['title']}**")
+                        if event['description']:
+                            st.markdown(f"_{event['description']}_")
+                    with col2:
+                        st.markdown(f"📅 {event['date']}")
+                        st.markdown(f"⏰ {event['time']}")
+                    st.divider()
 
 # ページ設定
 st.set_page_config(
@@ -941,7 +1061,9 @@ def render_info_sidebar():
         </div>
     </a>
     """, unsafe_allow_html=True)
-    st.markdown("- [📅 学校行事・年間予定](https://calendar.google.com/calendar/u/2?cid=bmljaGlkYWkxLmhhaXNoaW5AZ21haWwuY29t)")
+    # カレンダー表示
+    if st.button("📅 学校行事・年間予定を表示", key="calendar_button"):
+        display_calendar_events()
     
     st.markdown("#### 📖 進路について")
     st.markdown("- [日本大学進学実績](placeholder)")
