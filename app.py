@@ -430,6 +430,186 @@ def show_tuition_page():
     
     st.success("💡 詳細な納入方法や期日については、入学手続き時にご案内いたします。")
 
+def show_school_supplies_page():
+    """学用品ページを表示"""
+    st.title("🎒 日本大学第一中学・高等学校 令和7年度 学用品案内")
+    
+    # 戻るボタン
+    if st.button("🏠 メインページに戻る"):
+        st.session_state.show_school_supplies = False
+        st.rerun()
+    
+    # タブで制服・バッグ・学校用品を分離
+    tab1, tab2, tab3 = st.tabs(["👔 制服価格表", "🎒 学校指定バッグ", "🏃‍♂️ 学校用品"])
+    
+    with tab1:
+        st.markdown("### 📋 制服価格表")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### 👔 男子制服")
+            
+            male_uniform_data = {
+                "商品名": [
+                    "冬上着", "冬スラックス", "長袖Yシャツ（学校マーク入）", "ネクタイ（中高別・学年色）",
+                    "半袖Yシャツ（学校マーク入）", "夏スラックス", "靴下（無地・4足組）",
+                    "ニットベスト", "セーター", "Pコート・紺"
+                ],
+                "価格（税込）": [
+                    "¥26,840", "¥12,850", "¥4,960", "¥2,800", "¥4,570",
+                    "¥12,600", "¥1,280", "¥7,260", "¥8,540", "¥19,970"
+                ],
+                "区分": [
+                    "指定品", "指定品", "指定品", "指定品", "自由購入品",
+                    "自由購入品", "自由購入品", "自由購入品", "自由購入品", "自由購入品"
+                ]
+            }
+            
+            df_male = pd.DataFrame(male_uniform_data)
+            st.dataframe(df_male, use_container_width=True, hide_index=True)
+        
+        with col2:
+            st.markdown("#### 👗 女子制服")
+            
+            female_uniform_data = {
+                "商品名": [
+                    "冬上着", "冬スカート", "長袖ブラウス（学校マーク入）", "リボン（中高別・学年色）",
+                    "半袖ブラウス（学校マーク入）", "夏スカート", "ハイソックス（無地）",
+                    "冬スラックス（女子用）", "ニットベスト", "セーター"
+                ],
+                "価格（税込）": [
+                    "¥23,460", "¥18,970", "¥4,840", "¥2,220", "¥4,440",
+                    "¥18,340", "¥715", "¥11,330", "¥7,260", "¥8,540"
+                ],
+                "区分": [
+                    "指定品", "指定品", "指定品", "指定品", "自由購入品",
+                    "自由購入品", "自由購入品", "自由購入品", "自由購入品", "自由購入品"
+                ]
+            }
+            
+            df_female = pd.DataFrame(female_uniform_data)
+            st.dataframe(df_female, use_container_width=True, hide_index=True)
+        
+        # 凡例
+        st.markdown("#### 📌 区分について")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.markdown("🔴 **指定品**: 必ず購入が必要な商品")
+        with col2:
+            st.markdown("🟢 **自由購入品**: 希望により購入する商品")
+    
+    with tab2:
+        st.markdown("### 🎒 学校指定バッグ")
+        
+        # 申込締切日
+        st.warning("📅 **申込締切日**: 2025年 2月25日（火） 22:00  \n※締切後でも注文可能ですが、入学式に間に合わない可能性があります")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### 🎒 リュック")
+            st.metric(label="容量", value="27L")
+            st.metric(label="価格", value="¥11,550")
+            st.markdown("""
+            **サイズ**: 幅30cm × 高さ50cm × マチ17cm  
+            **素材**: ポリエステル100%  
+            **色**: 黒
+            """)
+        
+        with col2:
+            st.markdown("#### 💼 スクールバッグ")
+            st.metric(label="容量", value="18L")
+            st.metric(label="価格", value="¥9,240")
+            st.markdown("""
+            **サイズ**: 幅41cm × 高さ29cm × マチ15cm  
+            **素材**: ポリエステル100%  
+            **色**: 黒
+            """)
+        
+        st.info("""
+        ### 📝 ご注文について
+        - インターネット専用サイト「KANKO School Web」で注文
+        - 指定かばんは2種類から必ず1つは購入が必要
+        - 送料無料
+        - 3月下旬頃随時発送
+        - クレジット決済または代金引換対応
+        """)
+    
+    with tab3:
+        st.markdown("### 🏃‍♂️ 学校用品（体育用品等）")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("#### 必要用品")
+            
+            required_items_data = {
+                "品名": [
+                    "トレーニングジャケット", "トレーニングパンツ", "ハーフパンツ",
+                    "半袖シャツ", "上履き兼体育館シューズ"
+                ],
+                "価格": [
+                    "¥7,000", "¥5,000", "¥3,500", "¥2,800", "¥5,000"
+                ]
+            }
+            
+            df_required = pd.DataFrame(required_items_data)
+            st.dataframe(df_required, use_container_width=True, hide_index=True)
+        
+        with col2:
+            st.markdown("#### 推奨品（ご希望の方のみ）")
+            
+            optional_items_data = {
+                "品名": [
+                    "柔道着 4点片布付", "トレーナー", "長袖シャツ",
+                    "通学靴 男性 合皮", "通学靴 女性 合皮",
+                    "通学靴 男性 牛革", "通学靴 女性 牛革"
+                ],
+                "価格": [
+                    "¥5,500", "¥4,000", "¥3,300", "¥7,500",
+                    "¥6,500", "¥9,300", "¥7,300"
+                ]
+            }
+            
+            df_optional = pd.DataFrame(optional_items_data)
+            st.dataframe(df_optional, use_container_width=True, hide_index=True)
+        
+        # お問い合わせ・お申込み
+        st.markdown("---")
+        st.markdown("### 📞 お問い合わせ・お申込み")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            st.markdown("""
+            **株式会社サンウエル**  
+            代表取締役: 横山典男  
+            〒113-0021 東京都文京区本駒込6-6-7  
+            TEL: 03-3946-1311  
+            FAX: 03-3946-2720
+            """)
+        
+        with col2:
+            st.markdown("""
+            **💰 お支払い方法**  
+            **三菱UFJ銀行 大塚支店**  
+            普通口座: 0984703  
+            口座名義: 株式会社サンウエル  
+            """)
+            st.error("※振込時は受験番号＋生徒氏名でお振込みください")
+    
+    # 重要事項
+    st.markdown("---")
+    st.markdown("### ⚠️ 重要事項")
+    st.warning("""
+    - 新入学者ガイダンスの日に採寸を行います
+    - 商品は入学式までにご自宅配送いたします
+    - 商品到着後のサイズ交換については、送料はお客様負担となります
+    - 上履き兼体育館シューズ・柔道着のみサイズ交換対応可
+    - 通学靴・ネーム刺繍入り商品はサイズ交換不可
+    """)
+
 # ページ設定
 st.set_page_config(
     page_title="日本大学第一中学・高等学校 学校説明会アンケート",
@@ -952,6 +1132,11 @@ def main():
         show_tuition_page()
         return
     
+    # 学用品ページの確認
+    if 'show_school_supplies' in st.session_state and st.session_state.show_school_supplies:
+        show_school_supplies_page()
+        return
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -1381,7 +1566,9 @@ def render_info_sidebar():
     if st.button("💰 1年次学費", key="tuition_button"):
         st.session_state.show_tuition = True
         st.rerun()
-    st.markdown("- [学用品価格](placeholder)")
+    if st.button("🎒 学用品価格", key="school_supplies_button"):
+        st.session_state.show_school_supplies = True
+        st.rerun()
     
     st.markdown("#### 🚇 通学・アクセスについて")
     st.markdown("- [在校生最寄駅](placeholder)")
