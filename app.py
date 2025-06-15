@@ -441,6 +441,11 @@ def main():
         show_admission_guide_page()
         return
     
+    # 合格最低点ページの確認
+    if 'show_exam_results' in st.session_state and st.session_state.show_exam_results:
+        show_exam_results_page()
+        return
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -738,7 +743,9 @@ def render_info_sidebar():
     if st.button("📄 昨年度の入試要項", use_container_width=True):
         st.session_state.show_admission_guide = True
         st.rerun()
-    st.markdown("- [合格最低点](placeholder)")
+    if st.button("📊 合格最低点", use_container_width=True):
+        st.session_state.show_exam_results = True
+        st.rerun()
     st.markdown("- [偏差値](placeholder)")
     
     st.markdown("#### 🏫 学校生活について")
@@ -793,6 +800,22 @@ def show_admission_guide_page():
     
     # HTMLコンテンツを表示
     st.components.v1.html(ADMISSION_GUIDE_HTML, height=800, scrolling=True)
+
+def show_exam_results_page():
+    """合格最低点ページを表示"""
+    from exam_results_data import EXAM_RESULTS_HTML
+    
+    # ヘッダー
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("📊 2025年度 入試結果")
+    with col2:
+        if st.button("⬅ アンケートに戻る", use_container_width=True):
+            st.session_state.show_exam_results = False
+            st.rerun()
+    
+    # HTMLコンテンツを表示
+    st.components.v1.html(EXAM_RESULTS_HTML, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()
