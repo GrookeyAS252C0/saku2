@@ -439,19 +439,19 @@ COMMUTING_DATA_HTML = """<!DOCTYPE html>
                     <div class="stats-grid">
                         <div class="stat-card">
                             <div class="stat-number">127</div>
-                            <div class="stat-label">1回（61.7%）</div>
+                            <div class="stat-label">0回（61.7%）</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number">67</div>
-                            <div class="stat-label">2回（32.5%）</div>
+                            <div class="stat-label">1回（32.5%）</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number">9</div>
-                            <div class="stat-label">3回（4.4%）</div>
+                            <div class="stat-label">2回（4.4%）</div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-number">3</div>
-                            <div class="stat-label">4回（1.5%）</div>
+                            <div class="stat-label">3回（1.5%）</div>
                         </div>
                     </div>
                 </div>
@@ -460,9 +460,10 @@ COMMUTING_DATA_HTML = """<!DOCTYPE html>
                     <h2>中学校まとめ</h2>
                     <div class="key-points">
                         <ul>
-                            <li>全体の<strong>61.7%が乗り換え1回</strong>で通学</li>
+                            <li>全体の<strong>61.7%が乗り換えなし</strong>で通学</li>
                             <li><strong>89%が60分以内</strong>で通学可能</li>
                             <li>30分以内で通学できる生徒が<strong>28.2%</strong>存在</li>
+                            <li><strong>94.2%が1回以下の乗り換え</strong>で通学可能</li>
                         </ul>
                     </div>
                 </div>
@@ -643,13 +644,13 @@ COMMUTING_DATA_HTML = """<!DOCTYPE html>
                             <td>男子65.5% / 女子34.5%</td>
                         </tr>
                         <tr>
-                            <td>60分以内通学</td>
-                            <td>89%</td>
-                            <td>92.9%（1回以下乗り換え）</td>
+                            <td>1回以下乗り換え</td>
+                            <td>94.2%</td>
+                            <td>92.9%</td>
                         </tr>
                         <tr>
                             <td>主要通学手段</td>
-                            <td>乗り換え1回（61.7%）</td>
+                            <td>乗り換えなし（61.7%）</td>
                             <td>乗り換えなし（68.7%）</td>
                         </tr>
                         <tr>
