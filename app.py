@@ -1576,7 +1576,7 @@ def render_info_sidebar():
         st.rerun()
     
     st.markdown("#### 🚇 通学・アクセスについて")
-    if st.button("🚉 在校生最寄駅", key="station_button", use_container_width=True):
+    if st.button("🚉 1年生最寄駅", key="station_button", use_container_width=True):
         st.session_state.show_station_analysis = True
         st.rerun()
     if st.button("🔄 1年生乗り換え回数", key="transfer_button", use_container_width=True):
@@ -1657,7 +1657,7 @@ def show_station_analysis_page():
     # ヘッダー
     col1, col2 = st.columns([3, 1])
     with col1:
-        st.title("🚉 在校生最寄駅・通学時間分析")
+        st.title("🚉 1年生最寄駅・通学時間分析")
     with col2:
         if st.button("⬅ アンケートに戻る", use_container_width=True):
             st.session_state.show_station_analysis = False
