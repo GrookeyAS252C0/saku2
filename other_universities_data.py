@@ -397,53 +397,73 @@ OTHER_UNIVERSITIES_HTML = """<!DOCTYPE html>
             <div class="overview-stats">
                 <div class="overview-card">
                     <div class="number">240</div>
-                    <div class="label">合格者総数</div>
+                    <div class="label">他大学等合格者総数</div>
                 </div>
                 <div class="overview-card">
-                    <div class="number">86</div>
-                    <div class="label">実際の進学者数</div>
+                    <div class="number">75</div>
+                    <div class="label">他大学進学者</div>
+                </div>
+                <div class="overview-card">
+                    <div class="number">11</div>
+                    <div class="label">併願から日本大学選択</div>
                 </div>
                 <div class="overview-card">
                     <div class="number">3</div>
                     <div class="label">専門学校進学者</div>
                 </div>
-                <div class="overview-card">
-                    <div class="number">0</div>
-                    <div class="label">短期大学進学者</div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 25px; background: rgba(255, 255, 255, 0.9); border-radius: 15px; border-left: 4px solid #667eea;">
+                <h4 style="color: #2c3e50; margin-bottom: 15px; font-size: 1.3rem;">データの説明</h4>
+                <p style="color: #2c3e50; line-height: 1.6; margin-bottom: 15px;">
+                    このレポートは<strong>他大学を受験した生徒</strong>の結果を集計したものです。
+                </p>
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px;">
+                        <strong style="color: #667eea;">他大学進学：75名</strong><br>
+                        <small style="color: #7f8c8d;">他大学を第一志望として進学</small>
+                    </div>
+                    <div style="background: rgba(102, 126, 234, 0.1); padding: 15px; border-radius: 10px;">
+                        <strong style="color: #667eea;">日本大学選択：11名</strong><br>
+                        <small style="color: #7f8c8d;">併願受験したが日本大学を選択</small>
+                    </div>
                 </div>
             </div>
         </header>
 
         <!-- 選抜方式別実績 -->
         <section class="selection-methods animate-on-scroll">
-            <h3>選抜方式別実績</h3>
+            <h3>選抜方式別実績（他大学受験者）</h3>
             <div class="selection-grid">
                 <div class="selection-card">
                     <div class="selection-number">41名</div>
-                    <div class="selection-label">指定校推薦<br>（進学者）</div>
+                    <div class="selection-label">指定校推薦<br>（他大学進学）</div>
                 </div>
                 <div class="selection-card">
                     <div class="selection-number">177名</div>
-                    <div class="selection-label">一般選抜<br>（合格者）</div>
+                    <div class="selection-label">一般選抜<br>（合格者総数）</div>
                 </div>
                 <div class="selection-card">
                     <div class="selection-number">29名</div>
-                    <div class="selection-label">一般選抜<br>（進学者）</div>
+                    <div class="selection-label">一般選抜<br>（他大学進学）</div>
                 </div>
                 <div class="selection-card">
                     <div class="selection-number">11名</div>
-                    <div class="selection-label">公募制推薦<br>（進学者）</div>
+                    <div class="selection-label">公募制推薦<br>（他大学進学）</div>
                 </div>
                 <div class="selection-card">
                     <div class="selection-number">7名</div>
-                    <div class="selection-label">総合型選抜<br>（進学者）</div>
+                    <div class="selection-label">総合型選抜<br>（他大学進学）</div>
                 </div>
             </div>
+            <p style="text-align: center; margin-top: 20px; color: rgba(255, 255, 255, 0.9); font-size: 0.95rem;">
+                ※一般選抜合格177名のうち、29名が他大学進学、11名が日本大学選択、残りは日本大学専願進学
+            </p>
         </section>
 
         <!-- 難関大学進学実績 -->
         <section class="section animate-on-scroll">
-            <h2>難関大学進学実績</h2>
+            <h2>他大学受験結果（難関大学）</h2>
 
             <div class="highlight-stats">
                 <div class="highlight-stat blue">
@@ -458,6 +478,14 @@ OTHER_UNIVERSITIES_HTML = """<!DOCTYPE html>
                     <div class="number">25名</div>
                     <div class="label">成成明学＋学習院 合格者</div>
                 </div>
+            </div>
+
+            <div style="background: rgba(255, 243, 205, 0.3); padding: 25px; border-radius: 15px; margin-bottom: 30px; border-left: 4px solid #f39c12;">
+                <h4 style="color: #e67e22; margin-bottom: 15px;">🎯 併願戦略の成果</h4>
+                <p style="color: #2c3e50; line-height: 1.6;">
+                    多くの生徒が複数の難関大学に合格しており、選択肢を確保した上で最適な進路決定を行っています。<br>
+                    <strong>合格者数 > 進学者数</strong>となっているのは、生徒が複数の選択肢の中から最も適した大学を選択できているためです。
+                </p>
             </div>
 
             <!-- 早慶上理 -->
@@ -710,7 +738,41 @@ OTHER_UNIVERSITIES_HTML = """<!DOCTYPE html>
             </div>
         </section>
 
-        <!-- 専門学校進学状況 -->
+        <!-- 併願と選択の実態 -->
+        <section class="section animate-on-scroll">
+            <h2>併願と選択の実態</h2>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 30px;">
+                <div style="background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%); color: white; padding: 30px; border-radius: 20px; text-align: center;">
+                    <h4 style="margin-bottom: 15px; font-size: 1.4rem;">他大学専願進学</h4>
+                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">75名</div>
+                    <p style="opacity: 0.9;">他大学を第一志望として進学</p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%); color: white; padding: 30px; border-radius: 20px; text-align: center;">
+                    <h4 style="margin-bottom: 15px; font-size: 1.4rem;">併願から日本大学選択</h4>
+                    <div style="font-size: 3rem; font-weight: 700; margin-bottom: 10px;">11名</div>
+                    <p style="opacity: 0.9;">他大学にも合格したが日本大学を選択</p>
+                </div>
+            </div>
+            
+            <div style="background: rgba(116, 185, 255, 0.1); padding: 25px; border-radius: 15px; border-left: 4px solid #74b9ff;">
+                <h4 style="color: #0984e3; margin-bottom: 15px;">併願から日本大学を選択した11名の詳細</h4>
+                <p style="color: #2c3e50; line-height: 1.6; margin-bottom: 15px;">
+                    この11名は他大学（難関大学含む）にも合格しましたが、総合的な判断により日本大学を選択した生徒です。
+                    これは日本大学の教育内容や環境に対する高い評価を示しています。
+                </p>
+                <div style="background: white; padding: 20px; border-radius: 10px; margin-top: 15px;">
+                    <strong style="color: #0984e3;">日本大学選択理由（推定）</strong>
+                    <ul style="margin-top: 10px; color: #2c3e50;">
+                        <li>付属校としての環境への親しみ</li>
+                        <li>希望学部・学科での学習環境の良さ</li>
+                        <li>進学後のサポート体制への期待</li>
+                        <li>総合的な大学生活の質の評価</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
         <section class="section animate-on-scroll">
             <h2>専門学校進学状況</h2>
             <div class="university-grid">
@@ -759,7 +821,7 @@ OTHER_UNIVERSITIES_HTML = """<!DOCTYPE html>
             <div class="achievement-grid">
                 <div class="achievement-item">
                     <h4>豊富な合格実績</h4>
-                    <p>合格者総数240名は卒業生336名の約71%に相当し、多くの生徒が複数大学に合格して選択肢を確保しています。</p>
+                    <p>合格者総数240名により、多くの生徒が複数大学に合格して十分な選択肢を確保しています。</p>
                 </div>
                 <div class="achievement-item">
                     <h4>難関大学への確実な合格</h4>
@@ -770,24 +832,30 @@ OTHER_UNIVERSITIES_HTML = """<!DOCTYPE html>
                     <p>理工系大学への合格者が多数おり、特に千葉工業大学21名合格など、工学分野での実績が顕著です。</p>
                 </div>
                 <div class="achievement-item">
-                    <h4>効果的な選抜方式活用</h4>
-                    <p>指定校推薦を軸としつつ一般選抜でも幅広く挑戦し、生徒の特性に応じた最適な受験戦略を展開しています。</p>
+                    <h4>効果的な併願戦略</h4>
+                    <p>指定校推薦を軸としつつ一般選抜でも幅広く挑戦し、生徒が複数の選択肢から最適な進路を選択できています。</p>
                 </div>
                 <div class="achievement-item">
                     <h4>専門分野への対応</h4>
                     <p>医療系、薬学系、芸術系など専門性の高い分野への進学支援を行い、生徒の将来目標に応じたきめ細かい指導を実施しています。</p>
                 </div>
                 <div class="achievement-item">
-                    <h4>多様な進路選択</h4>
-                    <p>大学から専門学校まで、生徒一人ひとりの興味・関心・適性に対応した多様な進路選択を実現しています。</p>
+                    <h4>適切な進路選択支援</h4>
+                    <p>併願者11名が最終的に日本大学を選択するなど、生徒が複数の選択肢を比較検討した上で最適な進路決定ができています。</p>
                 </div>
             </div>
         </section>
 
         <!-- フッター -->
         <footer class="footer">
-            <p><strong>注記：進学者数は本年度の卒業生のみで、既卒生は含まれていません。</strong></p>
-            <p><strong>本レポートは令和6年度卒業生の実際の進路データに基づいて作成されています。</strong></p>
+            <p><strong>重要な注記</strong></p>
+            <p>このレポートは<strong>他大学を受験した生徒</strong>の結果を集計したものです。</p>
+            <p>進学者数は本年度の卒業生のみで、既卒生は含まれていません。</p>
+            <p style="margin-top: 15px;">
+                <strong>併願について：</strong>11名は他大学にも合格しましたが、最終的に日本大学を選択した生徒です。<br>
+                これらの生徒は日本大学進学者246名に含まれます。
+            </p>
+            <p style="margin-top: 15px;"><strong>本レポートは令和6年度卒業生の実際の進路データに基づいて作成されています。</strong></p>
             <p>日本大学第一高等学校 進路指導部</p>
         </footer>
     </div>
