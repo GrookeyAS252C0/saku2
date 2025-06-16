@@ -1160,6 +1160,11 @@ def main():
         show_station_analysis_page()
         return
     
+    # 他大学進学実績ページの確認
+    if 'show_other_universities' in st.session_state and st.session_state.show_other_universities:
+        show_other_universities_page()
+        return
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -1565,7 +1570,8 @@ def render_info_sidebar():
     if st.button("🎓 日本大学進学実績", key="nichidai_results_button", use_container_width=True):
         st.info("準備中です")
     if st.button("🏛️ 他大学進学実績", key="other_uni_results_button", use_container_width=True):
-        st.info("準備中です")
+        st.session_state.show_other_universities = True
+        st.rerun()
     
     st.markdown("#### 💰 学費について")
     if st.button("💰 1年次学費", key="tuition_button", use_container_width=True):
@@ -1665,6 +1671,22 @@ def show_station_analysis_page():
     
     # HTMLコンテンツを表示
     st.components.v1.html(STATION_ANALYSIS_HTML, height=800, scrolling=True)
+
+def show_other_universities_page():
+    """他大学進学実績ページを表示"""
+    from other_universities_data import OTHER_UNIVERSITIES_HTML
+    
+    # ヘッダー
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("🏛️ 2025年度 他大学進学実績")
+    with col2:
+        if st.button("⬅ アンケートに戻る", use_container_width=True):
+            st.session_state.show_other_universities = False
+            st.rerun()
+    
+    # HTMLコンテンツを表示
+    st.components.v1.html(OTHER_UNIVERSITIES_HTML, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()
