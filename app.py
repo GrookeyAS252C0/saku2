@@ -1155,6 +1155,11 @@ def main():
         show_commuting_data_page()
         return
     
+    # 駅分析ページの確認
+    if 'show_station_analysis' in st.session_state and st.session_state.show_station_analysis:
+        show_station_analysis_page()
+        return
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -1572,7 +1577,8 @@ def render_info_sidebar():
     
     st.markdown("#### 🚇 通学・アクセスについて")
     if st.button("🚉 在校生最寄駅", key="station_button", use_container_width=True):
-        st.info("準備中です")
+        st.session_state.show_station_analysis = True
+        st.rerun()
     if st.button("🔄 1年生乗り換え回数", key="transfer_button", use_container_width=True):
         st.session_state.show_commuting_data = True
         st.rerun()
@@ -1643,6 +1649,22 @@ def show_commuting_data_page():
     
     # HTMLコンテンツを表示
     st.components.v1.html(COMMUTING_DATA_HTML, height=800, scrolling=True)
+
+def show_station_analysis_page():
+    """駅分析ページを表示"""
+    from station_analysis_data import STATION_ANALYSIS_HTML
+    
+    # ヘッダー
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("🚉 在校生最寄駅・通学時間分析")
+    with col2:
+        if st.button("⬅ アンケートに戻る", use_container_width=True):
+            st.session_state.show_station_analysis = False
+            st.rerun()
+    
+    # HTMLコンテンツを表示
+    st.components.v1.html(STATION_ANALYSIS_HTML, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()
