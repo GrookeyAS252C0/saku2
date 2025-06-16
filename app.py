@@ -1589,7 +1589,7 @@ def render_info_sidebar():
     st.markdown("#### 🚇 通学・アクセスについて")
     if st.button("🚉 在校生最寄駅", key="station_button", use_container_width=True):
         st.info("準備中です")
-    if st.button("🔄 在校生乗り換え回数", key="transfer_button", use_container_width=True):
+    if st.button("🔄 1年生乗り換え回数", key="transfer_button", use_container_width=True):
         st.session_state.show_commuting_data = True
         st.rerun()
     if st.button("🗺️ 受験生通学区域", key="area_button", use_container_width=True):
@@ -1653,7 +1653,7 @@ def show_commuting_data_page():
     # ヘッダー
     col1, col2 = st.columns([3, 1])
     with col1:
-        st.title("🔄 2025年度 在校生乗り換え回数・通学状況")
+        st.title("🔄 2025年度 1年生乗り換え回数・通学状況")
     with col2:
         if st.button("⬅ アンケートに戻る", use_container_width=True):
             st.session_state.show_commuting_data = False
