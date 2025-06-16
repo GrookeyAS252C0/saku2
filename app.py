@@ -1165,6 +1165,11 @@ def main():
         show_other_universities_page()
         return
     
+    # 日本大学進学実績ページの確認
+    if 'show_nihon_university' in st.session_state and st.session_state.show_nihon_university:
+        show_nihon_university_page()
+        return
+    
     # 会場情報を取得
     venue_name = get_venue_info()
     
@@ -1568,7 +1573,8 @@ def render_info_sidebar():
     
     st.markdown("#### 📖 進路について")
     if st.button("🎓 日本大学進学実績", key="nichidai_results_button", use_container_width=True):
-        st.info("準備中です")
+        st.session_state.show_nihon_university = True
+        st.rerun()
     if st.button("🏛️ 他大学進学実績", key="other_uni_results_button", use_container_width=True):
         st.session_state.show_other_universities = True
         st.rerun()
@@ -1687,6 +1693,22 @@ def show_other_universities_page():
     
     # HTMLコンテンツを表示
     st.components.v1.html(OTHER_UNIVERSITIES_HTML, height=800, scrolling=True)
+
+def show_nihon_university_page():
+    """日本大学進学実績ページを表示"""
+    from nihon_university_data import NIHON_UNIVERSITY_HTML
+    
+    # ヘッダー
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.title("🎓 2025年度 日本大学進学実績")
+    with col2:
+        if st.button("⬅ アンケートに戻る", use_container_width=True):
+            st.session_state.show_nihon_university = False
+            st.rerun()
+    
+    # HTMLコンテンツを表示
+    st.components.v1.html(NIHON_UNIVERSITY_HTML, height=800, scrolling=True)
 
 if __name__ == "__main__":
     main()
