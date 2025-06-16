@@ -357,7 +357,7 @@ NIHON_UNIVERSITY_HTML = """<!DOCTYPE html>
             <div class="breakdown">
                 <div class="breakdown-item">
                     <div class="value">246名 (73.2%)</div>
-                    <div class="desc">日本大学進学者</div>
+                    <div class="desc">日本大学進学者（総数）</div>
                 </div>
                 <div class="breakdown-item">
                     <div class="value">75名 (22.3%)</div>
@@ -371,6 +371,23 @@ NIHON_UNIVERSITY_HTML = """<!DOCTYPE html>
                     <div class="value">12名 (3.6%)</div>
                     <div class="desc">進路未決定者</div>
                 </div>
+            </div>
+
+            <div style="margin-top: 30px; padding: 25px; background: rgba(102, 126, 234, 0.1); border-radius: 15px; border-left: 4px solid #667eea;">
+                <h4 style="color: #2c3e50; margin-bottom: 15px;">日本大学進学者246名の内訳</h4>
+                <div class="breakdown" style="margin-bottom: 0;">
+                    <div class="breakdown-item">
+                        <div class="value">235名</div>
+                        <div class="desc">日本大学専願進学者</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <div class="value">11名</div>
+                        <div class="desc">他大学併願からの日本大学選択者</div>
+                    </div>
+                </div>
+                <p style="font-size: 0.9rem; color: #7f8c8d; margin-top: 15px; text-align: center;">
+                    ※11名は他大学も受験したが、最終的に日本大学を選択した生徒
+                </p>
             </div>
         </section>
 
