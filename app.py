@@ -1550,24 +1550,8 @@ def render_info_sidebar():
         st.rerun()
     
     st.markdown("#### 🏫 学校生活について")
-    st.markdown("""
-    <a href="https://ckdasd5e7s5fktfua5bgyy.streamlit.app/" target="_blank" style="text-decoration: none;">
-        <div style="
-            background-color: #ff4b4b;
-            color: white;
-            padding: 0.5rem 0.75rem;
-            border-radius: 0.5rem;
-            text-align: center;
-            font-weight: 600;
-            border: 1px solid transparent;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin: 0.25rem 0;
-        " onmouseover="this.style.backgroundColor='#ff2b2b'" onmouseout="this.style.backgroundColor='#ff4b4b'">
-            🏃 部活動一覧
-        </div>
-    </a>
-    """, unsafe_allow_html=True)
+    if st.button("🏃 部活動一覧", key="club_button", use_container_width=True):
+        st.markdown("[🏃 部活動一覧（外部リンク）](https://ckdasd5e7s5fktfua5bgyy.streamlit.app/)")
     if st.button("📅 学校行事・年間予定を見る", key="calendar_button", use_container_width=True):
         st.session_state.show_calendar = True
         st.rerun()
