@@ -1576,8 +1576,6 @@ def render_info_sidebar():
     if st.button("🔄 1年生乗り換え回数", key="transfer_button", use_container_width=True):
         st.session_state.show_commuting_data = True
         st.rerun()
-    if st.button("🗺️ 受験生通学区域", key="area_button", use_container_width=True):
-        st.info("準備中です")
     
     st.markdown("---")
     st.info("💡 各項目をクリックすると詳細ページが開きます（準備中）")
