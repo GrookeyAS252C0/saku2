@@ -1596,7 +1596,6 @@ def render_info_sidebar():
         st.rerun()
     
     st.markdown("---")
-    st.info("💡 各項目をクリックすると詳細ページが開きます（準備中）")
 
 def show_admission_guide_page():
     """募集要項ページを表示"""
