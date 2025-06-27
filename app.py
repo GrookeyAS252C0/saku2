@@ -710,6 +710,10 @@ def is_survey_data_valid(survey_data):
     if survey_data.get("grade") == "学年を選んでください":
         return False, "学年を選択してください"
     
+    # 地域で「地域を選んでください」が選択されている場合は無効
+    if survey_data.get("area") == "地域を選んでください":
+        return False, "地域を選択してください"
+    
     # 少なくとも1つの質問項目に回答があるかチェック
     question_fields = ["triggers", "decision_factors"]
     has_answers = False
@@ -1289,15 +1293,15 @@ def check_required_fields(survey_data):
         missing_fields.append("学年")
     if not survey_data.get("gender"):
         missing_fields.append("性別") 
-    if not survey_data.get("area"):
+    if not survey_data.get("area") or survey_data.get("area") == "地域を選んでください":
         missing_fields.append("地域")
     
     # 質問項目の最低1つ回答チェック
-    question_fields = ["triggers", "decision_factors", "education_attractions", "expectations", "info_sources"]
+    question_fields = ["triggers", "decision_factors"]
     has_answers = any(survey_data.get(field) and len(survey_data[field]) > 0 for field in question_fields)
     
     if not has_answers:
-        missing_fields.append("質問項目（1〜5番）のうち最低1つ")
+        missing_fields.append("質問項目（1〜2番）のうち最低1つ")
     
     return missing_fields, len(missing_fields) == 0
 
@@ -1342,12 +1346,13 @@ def render_survey_input(current_survey):
         
         # 地域
         area_options = [
+            "地域を選んでください",
             "東京都 江東区", "東京都 江戸川区", "東京都 墨田区", "東京都 足立区", 
             "東京都 葛飾区", "東京都 中央区", "東京都 台東区", "東京都 荒川区",
             "東京都 その他23区", "千葉県 船橋市", "千葉県 市川市", "千葉県 浦安市",
             "千葉県 その他市町村", "埼玉県", "神奈川県", "その他"
         ]
-        area_index = area_options.index(current_survey.area) if current_survey.area in area_options else 0
+        area_index = area_options.index(current_survey.area) if current_survey.area in area_options else 0  # "地域を選んでください"をデフォルト
         area = st.selectbox("🔴 お住まいの地域（必須）", area_options, index=area_index)
         
         st.markdown("### 🔴 1. 日大一を知ったきっかけ（複数選択可）")
@@ -1370,23 +1375,24 @@ def render_survey_input(current_survey):
         # 既存のその他項目をチェック
         has_trigger_other = any(trigger.startswith("その他（") for trigger in current_survey.triggers)
         trigger_other_checked = st.checkbox("その他", value=has_trigger_other, key="trigger_other")
-        trigger_other_text = ""
-        if trigger_other_checked:
-            # 既存のその他テキストを取得（保存されている場合）
-            existing_other = ""
-            for trigger in current_survey.triggers:
-                if trigger.startswith("その他（") and trigger.endswith("）"):
-                    existing_other = trigger[3:-1]  # "その他（"と"）"を除去
-                    break
-            
-            trigger_other_text = st.text_input(
-                "その他の内容を入力してください：", 
-                value=existing_other,
-                key="trigger_other_text",
-                max_chars=100
-            )
-            if trigger_other_text.strip():
-                triggers.append(f"その他（{trigger_other_text.strip()}）")
+        
+        # 既存のその他テキストを取得（保存されている場合）
+        existing_trigger_other = ""
+        for trigger in current_survey.triggers:
+            if trigger.startswith("その他（") and trigger.endswith("）"):
+                existing_trigger_other = trigger[3:-1]  # "その他（"と"）"を除去
+                break
+        
+        trigger_other_text = st.text_input(
+            "その他の内容を入力してください（「その他」にチェックした場合のみ有効）：", 
+            value=existing_trigger_other,
+            key="trigger_other_text",
+            max_chars=100,
+            disabled=not trigger_other_checked
+        )
+        
+        if trigger_other_checked and trigger_other_text.strip():
+            triggers.append(f"その他（{trigger_other_text.strip()}）")
         
         st.markdown("### 2. 学校選びで大切にしていること（複数選択可）")
         decision_factor_items = [
@@ -1419,23 +1425,24 @@ def render_survey_input(current_survey):
         # 既存のその他項目をチェック
         has_decision_other = any(factor.startswith("その他（") for factor in current_survey.decision_factors)
         decision_other_checked = st.checkbox("その他", value=has_decision_other, key="decision_other")
-        decision_other_text = ""
-        if decision_other_checked:
-            # 既存のその他テキストを取得（保存されている場合）
-            existing_other = ""
-            for factor in current_survey.decision_factors:
-                if factor.startswith("その他（") and factor.endswith("）"):
-                    existing_other = factor[3:-1]  # "その他（"と"）"を除去
-                    break
-            
-            decision_other_text = st.text_input(
-                "その他の内容を入力してください：", 
-                value=existing_other,
-                key="decision_other_text",
-                max_chars=100
-            )
-            if decision_other_text.strip():
-                decision_factors.append(f"その他（{decision_other_text.strip()}）")
+        
+        # 既存のその他テキストを取得（保存されている場合）
+        existing_decision_other = ""
+        for factor in current_survey.decision_factors:
+            if factor.startswith("その他（") and factor.endswith("）"):
+                existing_decision_other = factor[3:-1]  # "その他（"と"）"を除去
+                break
+        
+        decision_other_text = st.text_input(
+            "その他の内容を入力してください（「その他」にチェックした場合のみ有効）：", 
+            value=existing_decision_other,
+            key="decision_other_text",
+            max_chars=100,
+            disabled=not decision_other_checked
+        )
+        
+        if decision_other_checked and decision_other_text.strip():
+            decision_factors.append(f"その他（{decision_other_text.strip()}）")
         
         # ボタン
         col1, col2 = st.columns(2)
