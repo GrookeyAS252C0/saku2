@@ -1383,14 +1383,16 @@ def render_survey_input(current_survey):
                 existing_trigger_other = trigger[3:-1]  # "その他（"と"）"を除去
                 break
         
+        # テキスト入力フィールドを常に表示
         trigger_other_text = st.text_input(
-            "その他の内容を入力してください（「その他」にチェックした場合のみ有効）：", 
+            "上記で「その他」をチェックした場合は、こちらに内容を入力してください：", 
             value=existing_trigger_other,
             key="trigger_other_text",
             max_chars=100,
-            disabled=not trigger_other_checked
+            placeholder="例：友人からの口コミ、近所で評判だったから、等"
         )
         
+        # 「その他」がチェックされていて、テキストが入力されている場合のみ追加
         if trigger_other_checked and trigger_other_text.strip():
             triggers.append(f"その他（{trigger_other_text.strip()}）")
         
@@ -1433,14 +1435,16 @@ def render_survey_input(current_survey):
                 existing_decision_other = factor[3:-1]  # "その他（"と"）"を除去
                 break
         
+        # テキスト入力フィールドを常に表示
         decision_other_text = st.text_input(
-            "その他の内容を入力してください（「その他」にチェックした場合のみ有効）：", 
+            "上記で「その他」をチェックした場合は、こちらに内容を入力してください：", 
             value=existing_decision_other,
             key="decision_other_text",
             max_chars=100,
-            disabled=not decision_other_checked
+            placeholder="例：食堂の充実度、校舎の綺麗さ、卒業生の活躍、等"
         )
         
+        # 「その他」がチェックされていて、テキストが入力されている場合のみ追加
         if decision_other_checked and decision_other_text.strip():
             decision_factors.append(f"その他（{decision_other_text.strip()}）")
         
