@@ -1333,14 +1333,14 @@ def render_survey_input(current_survey):
         # 学年
         grade_options = [
             "学年を選んでください",
-            "小学1年生", "小学2年生", "小学3年生", "小学4年生", "小学5年生", "小学6年生",
-            "中学1年生", "中学2年生", "中学3年生"
+            "中学3年生", "中学2年生", "中学1年生",
+            "小学6年生", "小学5年生", "小学4年生", "小学3年生", "小学2年生", "小学1年生"
         ]
         grade_index = grade_options.index(current_survey.grade) if current_survey.grade in grade_options else 0  # "学年を選んでください"をデフォルト
         grade = st.selectbox("🔴 学年（必須）", grade_options, index=grade_index)
         
         # 性別
-        gender_options = ["男子", "女子", "回答しない"]
+        gender_options = ["男子", "女子"]
         gender_index = gender_options.index(current_survey.gender) if current_survey.gender in gender_options else 0
         gender = st.radio("🔴 性別（必須）", gender_options, index=gender_index)
         

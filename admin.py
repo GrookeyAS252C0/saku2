@@ -189,7 +189,7 @@ def main():
                 values=gender_counts.values,
                 names=gender_counts.index,
                 title="性別分布",
-                color_discrete_map={'男子': '#3498db', '女子': '#e74c3c', '回答しない': '#95a5a6'}
+                color_discrete_map={'男子': '#3498db', '女子': '#e74c3c'}
             )
             st.plotly_chart(fig, use_container_width=True)
     
@@ -268,12 +268,11 @@ def main():
             
             # 基本統計シート
             stats_df = pd.DataFrame({
-                '項目': ['総回答数', '男子', '女子', '回答しない'],
+                '項目': ['総回答数', '男子', '女子'],
                 '人数': [
                     len(df),
                     len(df[df['gender'] == '男子']) if 'gender' in df.columns else 0,
-                    len(df[df['gender'] == '女子']) if 'gender' in df.columns else 0,
-                    len(df[df['gender'] == '回答しない']) if 'gender' in df.columns else 0
+                    len(df[df['gender'] == '女子']) if 'gender' in df.columns else 0
                 ]
             })
             stats_df.to_excel(writer, sheet_name='基本統計', index=False)
