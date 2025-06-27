@@ -1366,39 +1366,43 @@ def render_survey_input(current_survey):
         area_index = area_options.index(current_survey.area) if current_survey.area in area_options else 0
         area = st.selectbox("🔴 お住まいの地域（必須）", area_options, index=area_index)
         
-        st.markdown("### 🔴 1. 学校を知ったきっかけ（複数選択可・1〜5番のうち最低1つ必須）")
+        st.markdown("### 🔴 1. 日大一を知ったきっかけ（複数選択可・1〜5番のうち最低1つ必須）")
         trigger_items = [
-            "学校説明会・体験授業への参加",
-            "文化祭（櫻墨祭）への来校",
-            "YouTube・Instagram等のSNS配信",
+            "インターネット検索",
+            "YouTube・Instagram等のSNS",
             "在校生・卒業生からの紹介",
-            "塾・学校の先生からの推薦",
+            "塾・学校の先生からのアドバイス",
             "家族・親戚が日大系列の出身",
             "友人・知人の子どもが在籍",
             "学校案内パンフレット",
-            "通学途中で学校を見かけて",
-            "その他（きっかけ）"
+            "通勤・通学途中で学校を見かけて"
         ]
         triggers = []
         for item in trigger_items:
             if st.checkbox(item, value=item in current_survey.triggers, key=f"trigger_{item}"):
                 triggers.append(item)
         
-        st.markdown("### 2. 受験の決め手となった要因（複数選択可）")
+        st.markdown("### 2. 学校選びで大切にしていること（複数選択可）")
         decision_factor_items = [
-            "日本大学への内部進学率の高さ",
-            "中高一貫教育（6年間）のカリキュラム",
-            "先生と生徒の距離が近い校風",
-            "通学の利便性（駅近・自宅から近い）",
-            "大学付属校のメリット（受験に追われない学校生活）",
-            "高大連携教育（大学の授業体験等）",
-            "生徒の雰囲気・学校の活気",
-            "部活動の充実（特定の部活動への入部希望）",
+            "大学進学率（日本大学への付属推薦）",
+            "大学進学率（他大学への進学実績）",
+            "大学付属（受験に追われない学校生活）",
+            "高大連携（大学の授業体験等）",
+            "教育方針",
+            "雰囲気",
+            "部活動",
+            "通学の便利さ（駅近・自宅から近い）",
+            "学費",
+            "制服",
+            "先生と生徒との距離感",
+            "先生の質",
+            "資格試験取得に向けた取り組み",
             "国際理解教育・語学研修プログラム",
             "進路指導・学習サポートの充実",
-            "校訓「真・健・和」への共感",
-            "文武両道の実現が可能",
-            "その他（決め手）"
+            "講習・補習の実施",
+            "行事の種類と内容",
+            "PTA活動の少なさ",
+            "共学"
         ]
         decision_factors = []
         for item in decision_factor_items:
@@ -1414,8 +1418,7 @@ def render_survey_input(current_survey):
             "探究型学習",
             "きめ細やかな個別指導",
             "基礎学力重視の教育方針",
-            "自立した人間を育てる教育理念",
-            "その他（教育内容）"
+            "自立した人間を育てる教育理念"
         ]
         education_attractions = []
         for item in education_items:
@@ -1431,8 +1434,7 @@ def render_survey_input(current_survey):
             "友人との絆づくり",
             "将来の夢・目標の発見",
             "グローバルな視野の獲得",
-            "学業と部活動の両立",
-            "その他（期待）"
+            "学業と部活動の両立"
         ]
         expectations = []
         for item in expectation_items:
