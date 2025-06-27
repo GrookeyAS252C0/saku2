@@ -640,9 +640,6 @@ class SurveyResponse:
     area: str
     triggers: List[str]
     decision_factors: List[str]
-    education_attractions: List[str]
-    expectations: List[str]
-    info_sources: List[str]
     venue: str = ""
     submitted: bool = False
 
@@ -689,9 +686,6 @@ def create_new_survey():
         area="",
         triggers=[],
         decision_factors=[],
-        education_attractions=[],
-        expectations=[],
-        info_sources=[],
         venue=venue_name,
         submitted=False
     )
@@ -713,7 +707,7 @@ def is_survey_data_valid(survey_data):
         return False, "基本情報（学年・性別・地域）が未入力です"
     
     # 少なくとも1つの質問項目に回答があるかチェック
-    question_fields = ["triggers", "decision_factors", "education_attractions", "expectations", "info_sources"]
+    question_fields = ["triggers", "decision_factors"]
     has_answers = False
     
     for field in question_fields:
@@ -722,7 +716,7 @@ def is_survey_data_valid(survey_data):
             break
     
     if not has_answers:
-        return False, "質問項目（1〜5番）に少なくとも1つは回答してください"
+        return False, "質問項目（1〜2番）に少なくとも1つは回答してください"
     
     return True, "データは有効です"
 
@@ -788,14 +782,11 @@ def update_existing_record_in_sheets(data: Dict[str, Any]):
                     data.get("gender", ""),
                     data.get("area", ""),
                     ", ".join(data.get("triggers", [])),
-                    ", ".join(data.get("decision_factors", [])),
-                    ", ".join(data.get("education_attractions", [])),
-                    ", ".join(data.get("expectations", [])),
-                    ", ".join(data.get("info_sources", []))
+                    ", ".join(data.get("decision_factors", []))
                 ]
                 
                 # 行を更新
-                worksheet.update(f'A{sheet_row}:K{sheet_row}', [row_data])
+                worksheet.update(f'A{sheet_row}:H{sheet_row}', [row_data])
                 st.success(f"✅ 既存レコード（行{sheet_row}）を更新しました")
                 return True
         
@@ -851,7 +842,7 @@ def save_to_google_sheets(data: Dict[str, Any]):
                 if not all_data:  # データがない場合は新規作成
                     expected_headers = [
                         "ID", "送信日時", "会場", "学年", "性別", "地域",
-                        "きっかけ", "決め手", "教育内容", "期待", "情報源"
+                        "きっかけ", "決め手"
                     ]
                     worksheet.insert_row(expected_headers, 1)
                     st.info("✅ Google Sheetsにヘッダーを作成しました")
@@ -886,10 +877,7 @@ def save_to_google_sheets(data: Dict[str, Any]):
             data.get("gender", ""),
             data.get("area", ""),
             ", ".join(data.get("triggers", [])),
-            ", ".join(data.get("decision_factors", [])),
-            ", ".join(data.get("education_attractions", [])),
-            ", ".join(data.get("expectations", [])),
-            ", ".join(data.get("info_sources", []))
+            ", ".join(data.get("decision_factors", []))
         ]
         
         # データを追加
@@ -993,9 +981,6 @@ def load_user_data_from_sheets():
                 # 空の値をフィルタリング
                 triggers = [t for t in str(row.get('きっかけ', '')).split(', ') if t.strip()]
                 decision_factors = [d for d in str(row.get('決め手', '')).split(', ') if d.strip()]
-                education_attractions = [e for e in str(row.get('教育内容', '')).split(', ') if e.strip()]
-                expectations = [ex for ex in str(row.get('期待', '')).split(', ') if ex.strip()]
-                info_sources = [inf for inf in str(row.get('情報源', '')).split(', ') if inf.strip()]
                 
                 survey = SurveyResponse(
                     id=str(row.get('ID', f'restored_{i}')),
@@ -1006,9 +991,6 @@ def load_user_data_from_sheets():
                     area=str(row.get('地域', '')),
                     triggers=triggers,
                     decision_factors=decision_factors,
-                    education_attractions=education_attractions,
-                    expectations=expectations,
-                    info_sources=info_sources,
                     submitted=True
                 )
                 user_data.append(survey)
@@ -1318,7 +1300,7 @@ def check_required_fields(survey_data):
 def render_survey_input(current_survey):
     """アンケート入力フォームを描画"""
     # 必須項目の説明を追加
-    st.info("🔴 は必須項目です。質問項目（1〜5番）は最低1つの回答が必要です。")
+    st.info("🔴 は必須項目です。質問項目（1〜2番）は最低1つの回答が必要です。")
     
     # 現在の入力状況を表示
     current_data = {
@@ -1326,10 +1308,7 @@ def render_survey_input(current_survey):
         "gender": current_survey.gender,
         "area": current_survey.area,
         "triggers": current_survey.triggers,
-        "decision_factors": current_survey.decision_factors,
-        "education_attractions": current_survey.education_attractions,
-        "expectations": current_survey.expectations,
-        "info_sources": current_survey.info_sources
+        "decision_factors": current_survey.decision_factors
     }
     missing_fields, is_complete = check_required_fields(current_data)
     
@@ -1409,55 +1388,6 @@ def render_survey_input(current_survey):
             if st.checkbox(item, value=item in current_survey.decision_factors, key=f"decision_{item}"):
                 decision_factors.append(item)
         
-        st.markdown("### 3. 特に魅力を感じた教育内容（複数選択可）")
-        education_items = [
-            "習熟度別クラス編成",
-            "日本大学の各学部体験授業",
-            "オーストラリア語学研修",
-            "イングリッシュキャンプ",
-            "探究型学習",
-            "きめ細やかな個別指導",
-            "基礎学力重視の教育方針",
-            "自立した人間を育てる教育理念"
-        ]
-        education_attractions = []
-        for item in education_items:
-            if st.checkbox(item, value=item in current_survey.education_attractions, key=f"edu_{item}"):
-                education_attractions.append(item)
-        
-        st.markdown("### 4. 入学後に期待すること（複数選択可）")
-        expectation_items = [
-            "希望の部活動での活動",
-            "日本大学への進学",
-            "他大学への進学準備",
-            "充実した学校行事への参加",
-            "友人との絆づくり",
-            "将来の夢・目標の発見",
-            "グローバルな視野の獲得",
-            "学業と部活動の両立"
-        ]
-        expectations = []
-        for item in expectation_items:
-            if st.checkbox(item, value=item in current_survey.expectations, key=f"exp_{item}"):
-                expectations.append(item)
-        
-        st.markdown("### 5. 情報収集で役立ったもの（複数選択可）")
-        info_items = [
-            "学校説明会ライブ配信（YouTube）",
-            "Daily News（毎日の配信）",
-            "Instagram投稿",
-            "来校型学校体験会",
-            "文化祭での在校生との交流",
-            "個別相談・学校見学",
-            "在校生・卒業生の話",
-            "学校パンフレット・ホームページ",
-            "その他（情報源）"
-        ]
-        info_sources = []
-        for item in info_items:
-            if st.checkbox(item, value=item in current_survey.info_sources, key=f"info_{item}"):
-                info_sources.append(item)
-        
         # ボタン
         col1, col2 = st.columns(2)
         with col1:
@@ -1476,10 +1406,7 @@ def render_survey_input(current_survey):
                 "gender": gender,
                 "area": area,
                 "triggers": triggers,
-                "decision_factors": decision_factors,
-                "education_attractions": education_attractions,
-                "expectations": expectations,
-                "info_sources": info_sources
+                "decision_factors": decision_factors
             }
             save_current_survey(survey_data)
             
@@ -1533,9 +1460,6 @@ def render_submitted_survey(current_survey):
         st.write(f"**地域:** {current_survey.area}")
         st.write(f"**きっかけ:** {', '.join(current_survey.triggers)}")
         st.write(f"**決め手:** {', '.join(current_survey.decision_factors)}")
-        st.write(f"**教育内容:** {', '.join(current_survey.education_attractions)}")
-        st.write(f"**期待:** {', '.join(current_survey.expectations)}")
-        st.write(f"**情報源:** {', '.join(current_survey.info_sources)}")
     
     col1, col2 = st.columns(2)
     with col1:

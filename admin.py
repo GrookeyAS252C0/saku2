@@ -156,7 +156,7 @@ def main():
     
     # タブ表示
     st.header("📊 詳細分析")
-    tabs = st.tabs(["基本情報", "きっかけ", "決め手", "教育内容", "期待", "情報源", "生データ"])
+    tabs = st.tabs(["基本情報", "きっかけ", "決め手", "生データ"])
     
     with tabs[0]:  # 基本情報
         col1, col2 = st.columns(2)
@@ -226,16 +226,7 @@ def main():
     with tabs[2]:  # 決め手
         analyze_multiple_choice('decision_factors', '受験の決め手')
     
-    with tabs[3]:  # 教育内容
-        analyze_multiple_choice('education_attractions', '魅力を感じた教育内容')
-    
-    with tabs[4]:  # 期待
-        analyze_multiple_choice('expectations', '入学後の期待')
-    
-    with tabs[5]:  # 情報源
-        analyze_multiple_choice('info_sources', '情報収集で役立ったもの')
-    
-    with tabs[6]:  # 生データ
+    with tabs[3]:  # 生データ
         st.subheader("アンケート回答一覧")
         
         # データ表示用に整形
