@@ -714,17 +714,12 @@ def is_survey_data_valid(survey_data):
     if survey_data.get("area") == "地域を選んでください":
         return False, "地域を選択してください"
     
-    # 少なくとも1つの質問項目に回答があるかチェック
-    question_fields = ["triggers", "decision_factors"]
-    has_answers = False
+    # 「きっかけ」と「決め手」それぞれに1つ以上の回答が必要
+    if not survey_data.get("triggers") or len(survey_data["triggers"]) == 0:
+        return False, "質問1（きっかけ）に少なくとも1つは回答してください"
     
-    for field in question_fields:
-        if survey_data.get(field) and len(survey_data[field]) > 0:
-            has_answers = True
-            break
-    
-    if not has_answers:
-        return False, "質問項目（1〜2番）に少なくとも1つは回答してください"
+    if not survey_data.get("decision_factors") or len(survey_data["decision_factors"]) == 0:
+        return False, "質問2（決め手）に少なくとも1つは回答してください"
     
     return True, "データは有効です"
 
@@ -1296,19 +1291,19 @@ def check_required_fields(survey_data):
     if not survey_data.get("area") or survey_data.get("area") == "地域を選んでください":
         missing_fields.append("地域")
     
-    # 質問項目の最低1つ回答チェック
-    question_fields = ["triggers", "decision_factors"]
-    has_answers = any(survey_data.get(field) and len(survey_data[field]) > 0 for field in question_fields)
+    # 質問項目の個別必須チェック
+    if not survey_data.get("triggers") or len(survey_data["triggers"]) == 0:
+        missing_fields.append("質問1（きっかけ）")
     
-    if not has_answers:
-        missing_fields.append("質問項目（1〜2番）のうち最低1つ")
+    if not survey_data.get("decision_factors") or len(survey_data["decision_factors"]) == 0:
+        missing_fields.append("質問2（決め手）")
     
     return missing_fields, len(missing_fields) == 0
 
 def render_survey_input(current_survey):
     """アンケート入力フォームを描画"""
     # 必須項目の説明を追加
-    st.info("🔴 は必須項目です。質問項目（1〜2番）は最低1つの回答が必要です。")
+    st.info("🔴 は必須項目です。質問1（きっかけ）と質問2（決め手）はそれぞれ最低1つの回答が必要です。")
     
     # 現在の入力状況を表示
     current_data = {
@@ -1355,7 +1350,7 @@ def render_survey_input(current_survey):
         area_index = area_options.index(current_survey.area) if current_survey.area in area_options else 0  # "地域を選んでください"をデフォルト
         area = st.selectbox("🔴 お住まいの地域（必須）", area_options, index=area_index)
         
-        st.markdown("### 🔴 1. 日大一を知ったきっかけ（複数選択可）")
+        st.markdown("### 🔴 1. 日大一を知ったきっかけ（複数選択可・必須）")
         trigger_items = [
             "インターネット検索",
             "YouTube・Instagram等のSNS",
@@ -1396,7 +1391,7 @@ def render_survey_input(current_survey):
         if trigger_other_checked and trigger_other_text.strip():
             triggers.append(f"その他（{trigger_other_text.strip()}）")
         
-        st.markdown("### 2. 学校選びで大切にしていること（複数選択可）")
+        st.markdown("### 🔴 2. 学校選びで大切にしていること（複数選択可・必須）")
         decision_factor_items = [
             "大学進学率（日本大学への付属推薦）",
             "大学進学率（他大学への進学実績）",
